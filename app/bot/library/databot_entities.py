@@ -11,7 +11,7 @@ def generate_field_entity(databot: 'DataBot', t: str or None = None) -> Entity:
     entries = {}
     for field_schema in databot.project.data_schema.field_schemas:
         if not t or field_schema.type == t:
-            entries[field_schema.original_name] = field_schema.synonyms['en']
+            entries[field_schema.original_name] = field_schema.synonyms['en'].copy()
             if field_schema.readable_name and field_schema.readable_name != field_schema.original_name:
                 entries[field_schema.original_name] += [field_schema.readable_name]
     if not t:
