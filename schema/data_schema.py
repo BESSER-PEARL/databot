@@ -19,3 +19,6 @@ class DataSchema:
             if field.original_name == name:
                 return field
         return None
+
+    def to_dict(self):
+        return {'field_schemas': [field_schema.to_dict() for field_schema in self.field_schemas]}
