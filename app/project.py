@@ -21,7 +21,10 @@ class Project:
         self.df: DataFrame = df
         self.data_schema: DataSchema = DataSchema(self)
         self.plot: plotly.graph_objs.Figure = None
-
+        self.properties: dict = {
+            'nlp.language': 'en',
+            'websocket.port': 8765 + len(self.app.projects)
+        }
         self.app.add_project(self)
 
     def train_bot(self):

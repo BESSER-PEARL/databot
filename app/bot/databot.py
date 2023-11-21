@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 
 from besser.bot.core.bot import Bot
 from besser.bot.core.session import Session
+from besser.bot.nlp import NLP_LANGUAGE
+from besser.bot.platforms.websocket import WEBSOCKET_PORT
 from besser.bot.platforms.websocket.websocket_platform import WebSocketPlatform
 
 from app.bot.library.databot_entities import DataBotEntities
@@ -71,13 +73,7 @@ class DataBot:
         self.s0.when_intent_matched_go_to(self.intents.bar_chart, self.check_parameters_workflow.check_parameters)
         self.s0.when_no_intent_matched_go_to(self.llm_query_workflow.llm_query)
 
-
-
-
-
-
-
-
     def _set_bot_properties(self):
-        pass
+        self.bot.set_property(WEBSOCKET_PORT, self.project.properties['websocket.port'])
+        self.bot.set_property(NLP_LANGUAGE, self.project.properties['nlp.language'])
 

@@ -166,8 +166,6 @@ def all_projects_container():
                     type='primary'
             ):
                 project.stop_bot()
-                # del st.session_state['history']
-                # del st.session_state['queue']
                 st.rerun()
 
 

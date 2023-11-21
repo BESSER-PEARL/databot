@@ -4,6 +4,7 @@ import threading
 import pandas as pd
 import streamlit as st
 import websocket
+from audio_recorder_streamlit import audio_recorder
 from besser.bot.platforms.websocket.message import Message
 from plotly import io
 
@@ -45,16 +46,16 @@ def websocket_connection():
         message = Message(t, content, is_user=False)
         if message.type == 'plotly':
             app.selected_project.plot = message.content
-        streamlit_session._session_state['queue'].put(message)
+        streamlit_session._session_state[app.selected_project.name]['queue'].put(message)
         streamlit_session._handle_rerun_script_request()
 
-    ws = websocket.WebSocketApp("ws://localhost:8765/",
+    ws = websocket.WebSocketApp(f"ws://localhost:{app.selected_project.properties['websocket.port']}/",
                                 on_message=on_message)
     websocket_thread = threading.Thread(target=ws.run_forever)
     add_script_run_ctx(websocket_thread)
     websocket_thread.start()
-    st.session_state['websocket'] = ws
-    st.session_state['websocket_thread'] = websocket_thread
+    st.session_state[app.selected_project.name]['websocket'] = ws
+    st.session_state[app.selected_project.name]['websocket_thread'] = websocket_thread
 
 
 def check_websocket_connection():
@@ -64,21 +65,24 @@ def check_websocket_connection():
 
     If there is a dead connection, delete it from the session_state.
     """
-    if 'websocket_thread' in st.session_state and not st.session_state['websocket_thread'].is_alive():
-        del st.session_state['websocket_thread']
-        del st.session_state['websocket']
-    if 'websocket' not in st.session_state and 'websocket_thread' not in st.session_state:
+    if 'websocket_thread' in st.session_state[app.selected_project.name] and not st.session_state[app.selected_project.name]['websocket_thread'].is_alive():
+        del st.session_state[app.selected_project.name]['websocket_thread']
+        del st.session_state[app.selected_project.name]['websocket']
+    if 'websocket' not in st.session_state[app.selected_project.name] and 'websocket_thread' not in st.session_state[app.selected_project.name]:
         print('retrying websocket connection...')
         websocket_connection()
 
 
 def bot_container():
     """Show the bot container"""
+    global m_count
+    m_count = 0
+
     def on_input_change():
         user_input = st.session_state['user_input']
         st.session_state['user_input'] = ''
         message = Message('str', user_input, is_user=True)
-        st.session_state['history'].append(message)
+        st.session_state[app.selected_project.name]['history'].append(message)
         payload = Payload(action=PayloadAction.USER_MESSAGE,
                           message=user_input)
         try:
@@ -106,27 +110,44 @@ def bot_container():
             message(f'I am afraid I cannot help you right now because I have not been trained yet 😢', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
 
         else:
+            if app.selected_project.name not in st.session_state:
+                st.session_state[app.selected_project.name] = {
+                    'history': [],
+                    'queue': queue.Queue()
+                }
             check_websocket_connection()
-            ws = st.session_state['websocket']
+            ws = st.session_state[app.selected_project.name]['websocket']
 
-            if 'history' not in st.session_state:
-                st.session_state['history'] = []
-
-            if 'queue' not in st.session_state:
-                st.session_state['queue'] = queue.Queue()
-
-            while not st.session_state['queue'].empty():
-                m = st.session_state['queue'].get()
-                st.session_state['history'].append(m)
-            for m in st.session_state['history']:
+            while not st.session_state[app.selected_project.name]['queue'].empty():
+                m = st.session_state[app.selected_project.name]['queue'].get()
+                st.session_state[app.selected_project.name]['history'].append(m)
+            for m in st.session_state[app.selected_project.name]['history']:
                 if m.type == 'str':
                     message(m.content, is_user=m.is_user, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
-    st.text_input(
-        label='user_input',
-        label_visibility='collapsed',
-        placeholder='Write your question here',
-        on_change=on_input_change,
-        key="user_input",
-        disabled=not app.selected_project or not app.selected_project.bot_running
-    )
-
+                elif m.type == 'audio':
+                    with st.columns([0.1, 0.9])[1]:  # To shift the audio message to the right side
+                        st.audio(m.content, format="audio/wav")
+    col1, col2 = st.columns([0.85, 0.15])
+    with col1:
+        st.text_input(
+            label='user_input',
+            label_visibility='collapsed',
+            placeholder='Write your question here',
+            on_change=on_input_change,
+            key="user_input",
+            disabled=not app.selected_project or not app.selected_project.bot_running
+        )
+    with col2:
+        if voice_bytes := audio_recorder(text=None, pause_threshold=2, icon_size='2x', neutral_color='#6b6b6b'):
+            if ('last_voice_message' not in st.session_state or st.session_state['last_voice_message'] != voice_bytes) \
+                    and app.selected_project and app.selected_project.bot_running:
+                st.session_state['last_voice_message'] = voice_bytes
+                # Encode the audio bytes to a base64 string
+                voice_message = Message(t='audio', content=voice_bytes, is_user=True)
+                st.session_state[app.selected_project.name]['history'].append(voice_message)
+                transcription = app.speech2text.speech2text(voice_bytes)
+                payload = Payload(action=PayloadAction.USER_MESSAGE, message=transcription)
+                try:
+                    ws.send(json.dumps(payload, cls=PayloadEncoder))
+                except Exception as e:
+                    st.error('Your message could not be sent. The connection is already closed')

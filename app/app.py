@@ -5,17 +5,22 @@ import streamlit as st
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 from app.project import Project
+from app.speech2text import Speech2Text
 from ui.session_monitoring import session_monitoring
 
 
 class App:
 
     def __init__(self):
-        self.projects: list[Project] = []
-        self.selected_project: Project = None
         self.properties: dict = {
             'openai_api_key': None,
+            'nlp.language': 'en', # used for the speech2text component, there is 1 for all the projects
+            'nlp.speech2text.hf.model': 'openai/whisper-tiny',
         }
+        self.projects: list[Project] = []
+        self.selected_project: Project = None
+        self.speech2text: Speech2Text = Speech2Text(self)
+
 
     def add_project(self, project: Project):
         self.projects.append(project)
