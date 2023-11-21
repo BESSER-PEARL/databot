@@ -25,11 +25,11 @@ def playground():
         bot_container()
 
     with dash_col:
-        data_source = app.selected_project.data_sources[0]
+        project = app.selected_project
         tab_data, tab_plot = st.tabs(['Data', 'Plot'])
 
         with tab_data:
-            st.write(data_source.df)
+            st.write(project.df)
 
         with tab_plot:
             if app.selected_project.plot:

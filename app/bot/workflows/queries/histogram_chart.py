@@ -15,7 +15,7 @@ class HistogramChart(AbstractQueryWorkflow):
 
     def answer(self, session: Session) -> None:
         predicted_intent: IntentClassifierPrediction = session.get('predicted_intent')
-        df = self.databot.project.data_sources[0].df
+        df = self.databot.project.df
         field = predicted_intent.get_parameter(session_keys.FIELD).value
         fig = px.histogram(df, x=field)
         session.reply(f'Sure! This is the histogram of {field}')

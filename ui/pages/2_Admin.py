@@ -2,7 +2,6 @@ import pandas as pd
 import streamlit as st
 
 from app.app import app
-from app.data_source import DataSource
 from app.project import Project
 from ui.sidebar import project_selection
 from ui.utils.utils import clear_box, disable_input_focusout, get_input_value
@@ -64,8 +63,7 @@ def new_project_container():
             else:
                 if project_name is None or project_name == '':
                     project_name = f'project_{len(app.projects)}'
-                project = Project(app, project_name)
-                data_source = DataSource(project, uploaded_file.name, pd.read_csv(uploaded_file))
+                project = Project(app, project_name, pd.read_csv(uploaded_file))
                 app.selected_project = project
                 st.session_state['new_project_button'] = False  # exit the new project UI
                 st.rerun()
@@ -224,9 +222,8 @@ def project_customization_container():
 
     # DATA PREVIEW
     st.subheader('Data preview')
-    data_source = project.data_sources[0]
-    with st.expander(data_source.name, expanded=False):
-        st.dataframe(data_source.df)
+    with st.expander(project.name, expanded=False):
+        st.dataframe(project.df)
     # FIELD CUSTOMIZATION
     st.subheader('Data schema')
     st.info(
@@ -241,10 +238,10 @@ def project_customization_container():
         with st.expander('Select a field', expanded=True):
             selected_field = st.radio(
                 label='selected_field',
-                options=[field.original_name for field in data_source.data_schema.field_schemas],
+                options=[field.original_name for field in project.data_schema.field_schemas],
                 label_visibility='collapsed'
             )
-    field = data_source.get_field(selected_field)
+    field = project.data_schema.get_field(selected_field)
     with col2:
         # READABLE NAME
         field.readable_name = st.text_input(

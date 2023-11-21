@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
-from app.data_source import DataSource
 from app.project import Project
 from ui.session_monitoring import session_monitoring
 
@@ -33,8 +32,7 @@ def get_app():
     _app = App()
     if not _app.projects:
         # TESTING PROJECT
-        project = Project(_app, 'test_project')
-        data_source = DataSource(project, 'sales.csv', pd.read_csv('../sales.csv'))
+        project = Project(_app, 'test_project', pd.read_csv('../datasets/sales.csv'))
         _app.selected_project = project
     return _app
 

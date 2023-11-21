@@ -1,10 +1,10 @@
 from typing import TYPE_CHECKING
 
 import plotly.graph_objs
+from pandas import DataFrame
 
 from app.bot.databot import DataBot
-from app.data_source import DataSource
-from schema.project_schema import ProjectSchema
+from schema.data_schema import DataSchema
 
 if TYPE_CHECKING:
     from app.app import App
@@ -12,20 +12,17 @@ if TYPE_CHECKING:
 
 class Project:
 
-    def __init__(self, app: 'App', name: str):
+    def __init__(self, app: 'App', name: str, df: DataFrame):
         self.app: App = app
         self.name: str = name
         self.databot: DataBot = None
         self.bot_running = False
         self.bot_trained = False
-        self.project_schema: ProjectSchema = ProjectSchema(self)
-        self.data_sources: list[DataSource] = []
-
-        self.app.add_project(self)
+        self.df: DataFrame = df
+        self.data_schema: DataSchema = DataSchema(self)
         self.plot: plotly.graph_objs.Figure = None
 
-    def add_data_source(self, data_source: DataSource):
-        self.data_sources.append(data_source)
+        self.app.add_project(self)
 
     def train_bot(self):
         self.databot = DataBot(self)

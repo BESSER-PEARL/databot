@@ -3,15 +3,15 @@ from typing import TYPE_CHECKING
 from schema.field_schema import FieldSchema
 
 if TYPE_CHECKING:
-    from app.data_source import DataSource
+    from app.project import Project
 
 
 class DataSchema:
 
-    def __init__(self, data_source: 'DataSource'):
-        self.data_source: 'DataSource' = data_source
+    def __init__(self, project: 'Project'):
+        self.project: 'Project' = project
         self.field_schemas: list[FieldSchema] = []
-        for column in self.data_source.df.columns:
+        for column in self.project.df.columns:
             self.field_schemas.append(FieldSchema(self, column))
 
     def get_field(self, name: str):

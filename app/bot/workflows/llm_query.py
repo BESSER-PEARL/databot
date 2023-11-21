@@ -25,7 +25,7 @@ class LLMQuery:
         def llm_query_body(session: Session):
             if self.client:
                 try:
-                    data_schema_dict = self.databot.project.data_sources[0].data_schema.to_dict()
+                    data_schema_dict = self.databot.project.data_schema.to_dict()
                     response = self.query_openai(session.message, data_schema_dict)
                     session.reply(str(response))
                 except Exception as e:

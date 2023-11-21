@@ -14,13 +14,13 @@ class FieldSchema:
         self.original_name: str = name
         self.readable_name: str = name
         self.synonyms: dict[str, list[str]] = {'en': []}
-        t = self.data_schema.data_source.df[self.original_name].dtype
+        t = self.data_schema.project.df[self.original_name].dtype
         if t == 'object':
             t = 'textual'
         if t == 'int64' or t == 'float64':
             t = 'numeric'
         self.type: FieldType = FieldType(t)  # TODO: infer type (datetime, etc)
-        self.num_different_values: int = self.data_schema.data_source.df[self.original_name].nunique()
+        self.num_different_values: int = self.data_schema.project.df[self.original_name].nunique()
         self.key: bool = False
         self._categorical: bool = self.num_different_values < 10
         self.categories: list[Category] or None = None
@@ -40,7 +40,7 @@ class FieldSchema:
     def _update_categories(self):
         if self._categorical and self.categories is None:
             self.categories = []
-            for category in self.data_schema.data_source.df[self.original_name].unique():
+            for category in self.data_schema.project.df[self.original_name].unique():
                 self.categories.append(Category(category))
 
     def get_category(self, value: str):

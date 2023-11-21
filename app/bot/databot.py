@@ -4,7 +4,6 @@ from typing import TYPE_CHECKING
 
 from besser.bot.core.bot import Bot
 from besser.bot.core.session import Session
-from besser.bot.nlp.intent_classifier.intent_classifier_prediction import IntentClassifierPrediction
 from besser.bot.platforms.websocket.websocket_platform import WebSocketPlatform
 
 from app.bot.library.databot_entities import DataBotEntities

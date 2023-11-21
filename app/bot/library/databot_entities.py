@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 
 def generate_field_entity(databot: 'DataBot', t: str or None = None) -> Entity:
     entries = {}
-    for field_schema in databot.project.data_sources[0].data_schema.field_schemas:
+    for field_schema in databot.project.data_schema.field_schemas:
         if not t or field_schema.type == t:
             entries[field_schema.original_name] = field_schema.synonyms['en']
             if field_schema.readable_name and field_schema.readable_name != field_schema.original_name:
@@ -40,7 +40,7 @@ def merge_entities(name: str, entities: list[Entity]):
 
 def generate_field_value_entity(databot: 'DataBot') -> Entity:
     entries = {}
-    for field_schema in databot.project.data_sources[0].data_schema.field_schemas:
+    for field_schema in databot.project.data_schema.field_schemas:
         if field_schema.categorical:
             for category in field_schema.categories:
                 entries[category.value] = category.synonyms
