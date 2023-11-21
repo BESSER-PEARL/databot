@@ -1,0 +1,22 @@
+{
+  "row_name": {
+    "en": [
+      "entry",
+      "row",
+      "value",
+      "record"
+    ],
+    "ca": [
+      "entrada",
+      "fila",
+      "valor",
+      "registre"
+    ],
+    "es": [
+      "entrada",
+      "fila",
+      "valor",
+      "registro"
+    ]
+  }
+}

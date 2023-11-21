@@ -1,0 +1,143 @@
+{
+  "histogram_chart": [
+    "Histogram of FIELD"
+  ],
+  "line_chart": [
+    "Line chart of FIELD_x over FIELD_Y"
+  ],
+  "bar_chart": [
+    "Bar chart of FIELD_x grouped by FIELD_Y"
+  ],
+
+  "reset": [
+    "reset"
+  ],
+  "show_data": [
+    "show data"
+  ],
+  "show_all": [
+    "show all"
+  ],
+  "show_all_distinct": [
+    "show all distinct"
+  ],
+  "show_next_page": [
+    "\u27A1",
+    "next page"
+    ],
+  "show_previous_page": [
+    "\u2B05",
+    "previous page"
+  ],
+  "add_filter": [
+    "add filter"
+  ],
+  "remove_filter": [
+    "remove filter"
+  ],
+  "add_field_to_view": [
+    "add field to view"
+  ],
+  "structured_query": [
+    "Guided search"
+  ],
+  "custom_query": [
+    "Query"
+  ],
+  "another_query": [
+    "Another query"
+  ],
+  "i_dont_know": [
+    "I don't know"
+  ],
+  "value": [
+    "VALUE"
+  ],
+  "show_field_distinct": [
+    "How many FIELD are?",
+    "How many FIELD are there?",
+    "What FIELD are there?",
+    "Which are the different FIELD?",
+    "What kind of FIELD are there?"
+  ],
+  "most_frequent_value_in_field": [
+    "What FIELD has more ROW_NAME?",
+    "Which is the FIELD that has more ROW_NAME?",
+    "What is the most frequent FIELD?",
+    "Which FIELD is the most frequent?",
+    "Which is the FIELD with the most ROW_NAME?",
+    "What is the FIELD with more ROW_NAME?",
+    "What is the most repeated FIELD?"
+  ],
+  "least_frequent_value_in_field": [
+    "What FIELD has less ROW_NAME?",
+    "Which is the FIELD that has fewer ROW_NAME?",
+    "What is the least frequent FIELD?",
+    "Which FIELD is the least frequent?",
+    "Which is the FIELD with the least ROW_NAME?",
+    "What is the FIELD with fewer ROW_NAME?",
+    "What is the least repeated FIELD?"
+  ],
+  "value_frequency": [
+    "How many VALUE are there?",
+    "How many VALUE do we have?"
+  ],
+  "value1_more_than_value2": [
+    "Are there more VALUE1 or VALUE2?"
+  ],
+  "value1_less_than_value2": [
+    "Are there fewer VALUE1 or VALUE2?"
+  ],
+  "row_count": [
+    "How many ROW_NAME are there?",
+    "How many ROW_NAME do we have?",
+    "Give me the number of ROW_NAME"
+  ],
+  "field_count": [
+    "How many attributes does the dataset have?",
+    "How many columns does the dataset have?",
+    "How many fields does the dataset have?",
+    "How many fields are there?",
+    "How many columns are there?",
+    "Give me the number of fields",
+    "Give me the number of attributes",
+    "Give me the number of columns",
+    "How many attributes do the ROW_NAME have?"
+  ],
+  "select_fields_with_conditions": [
+    "Who are the VALUE1?",
+    "Who are the VALUE1 of VALUE2?",
+    "Give me the ROW_NAME of VALUE1",
+    "Give me the ROW_NAME of VALUE1 and VALUE2",
+    "What is the FIELD1 of VALUE1?",
+    "What is the FIELD1 of VALUE1 and VALUE2?",
+    "What is the OPERATOR FIELD1?",
+    "What is the OPERATOR FIELD1 of VALUE1?",
+    "What is the OPERATOR FIELD1 of VALUE1 and VALUE2?",
+    "Which is the NUMBER OPERATOR FIELD1?",
+    "Which is the NUMBER OPERATOR FIELD1 of VALUE1?",
+    "Which is the NUMBER OPERATOR FIELD1 of VALUE1 and VALUE2?",
+    "Which is the ROW_NAME with the OPERATOR FIELD1?",
+    "Which is the ROW_NAME with the OPERATOR FIELD1 of VALUE1?",
+    "Which is the ROW_NAME with the OPERATOR FIELD1 of VALUE1 and VALUE2?",
+    "Show me the NUMBER ROW_NAME with the OPERATOR FIELD1",
+    "Show me the NUMBER ROW_NAME with the OPERATOR FIELD1 of VALUE1",
+    "Show me the NUMBER ROW_NAME with the OPERATOR FIELD1 of VALUE1 and VALUE2",
+    "Show me the FIELD1 with the OPERATOR FIELD2",
+    "Show me the FIELD1 with the OPERATOR FIELD2 of VALUE1",
+    "Show me the FIELD1 with the OPERATOR FIELD2 of VALUE1 and VALUE2",
+    "Give me the NUMBER FIELD1 with the OPERATOR FIELD2",
+    "Give me the NUMBER FIELD1 with the OPERATOR FIELD2 of VALUE1",
+    "Give me the NUMBER FIELD1 with the OPERATOR FIELD2 of VALUE1 and VALUE2"
+  ],
+  "field_operator_value": [
+    "FIELD OPERATOR VALUE",
+    "I want to filter FIELD OPERATOR VALUE",
+    "Which are the ROW_NAME with FIELD OPERATOR VALUE?",
+    "Give me the ROW_NAME with FIELD OPERATOR VALUE"
+  ],
+  "field_between_values": [
+    "Give me the ROW_NAME with FIELD between VALUE1 and VALUE2",
+    "Give me the ROW_NAME with FIELD between VALUE1, VALUE2"
+  ]
+}

@@ -1,0 +1,478 @@
+{
+  "numeric_operator": {
+    "=": {
+      "en": {
+        "synonyms": [
+          "equals"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "igual",
+          "igual que",
+          "igual a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "igual",
+          "igual que",
+          "igual a"
+        ]
+      }
+    },
+    "<": {
+      "en": {
+        "synonyms": [
+          "less than",
+          "lower than"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "més petit que",
+          "més baix que",
+          "menys que",
+          "menor que"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "más pequeño que",
+          "más bajo que",
+          "menos que",
+          "menor que"
+        ]
+      }
+    },
+    "<=": {
+      "en": {
+        "synonyms": [
+          "less than or equals",
+          "lower than or equals"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "més petit o igual que",
+          "més baix o igual que",
+          "menys o igual que",
+          "menor o igual que"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "más pequeño o igual que",
+          "más bajo o igual que",
+          "menos o igual que",
+          "menor o igual que"
+        ]
+      }
+    },
+    ">": {
+      "en": {
+        "synonyms": [
+          "greater than",
+          "higher than"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "més gran que",
+          "més alt que",
+          "més que",
+          "major que"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "más grande que",
+          "más alto que",
+          "más que",
+          "mayor que"
+        ]
+      }
+    },
+    ">=": {
+      "en": {
+        "synonyms": [
+          "greater than or equals",
+          "higher than or equals"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "més gran o igual que",
+          "més alt o igual que",
+          "més o igual que",
+          "major o igual que"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "más grande o igual que",
+          "más alto o igual que",
+          "más o igual que",
+          "mayor o igual que"
+        ]
+      }
+    },
+    "!=": {
+      "en": {
+        "synonyms": [
+          "not equals",
+          "different"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "diferent",
+          "diferent que",
+          "diferent a",
+          "no igual que",
+          "no igual a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "diferente",
+          "diferente que",
+          "diferente a",
+          "no igual que",
+          "no igual a"
+        ]
+      }
+    }
+  },
+  "datetime_operator": {
+    "date_equals": {
+      "en": {
+       "synonyms": [
+         "equals"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "igual",
+          "igual que",
+          "igual a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "igual",
+          "igual que",
+          "igual a"
+        ]
+      }
+    },
+    "date_different": {
+      "en": {
+       "synonyms": [
+          "different",
+          "not equals"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "diferent",
+          "diferent que",
+          "diferent a",
+          "no igual que",
+          "no igual a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "diferente",
+          "diferente que",
+          "diferente a",
+          "no igual que",
+          "no igual a"
+        ]
+      }
+    },
+    "before": {
+      "en": {
+       "synonyms": [
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "abans",
+          "abans que",
+          "anterior a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "antes",
+          "antes que",
+          "anterior a"
+        ]
+      }
+    },
+    "after": {
+      "en": {
+       "synonyms": [
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "després",
+          "després que",
+          "posterior a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "después",
+          "después que",
+          "posterior a"
+        ]
+      }
+    }
+  },
+  "textual_operator": {
+    "equals": {
+      "en": {
+       "synonyms": [
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "igual",
+          "igual que",
+          "igual a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "igual",
+          "igual que",
+          "igual a"
+        ]
+      }
+    },
+    "different": {
+      "en": {
+       "synonyms": [
+          "not equals"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "diferent",
+          "diferent que",
+          "diferent a",
+          "no igual que",
+          "no igual a"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "diferente",
+          "diferente que",
+          "diferente a",
+          "no igual que",
+          "no igual a"
+        ]
+      }
+    },
+    "contains": {
+      "en": {
+       "synonyms": [
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "conté"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "contiene"
+        ]
+      }
+    },
+    "starts with": {
+      "en": {
+       "synonyms": [
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "comença amb",
+          "comença per"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "comienza con",
+          "comienza por"
+        ]
+      }
+    },
+    "ends with": {
+      "en": {
+        "synonyms": [
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "acaba amb",
+          "acaba per"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "acaba con",
+          "acaba por"
+        ]
+      }
+    }
+  },
+  "numeric_function_operator": {
+    "max": {
+      "en": {
+        "synonyms": [
+          "maximum",
+          "highest",
+          "biggest",
+          "greatest",
+          "top",
+          "more"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "màxim",
+          "més alt",
+          "més gran",
+          "major",
+          "top",
+          "més"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "máximo",
+          "más alto",
+          "más grande",
+          "mayor",
+          "top",
+          "más"
+        ]
+      }
+    },
+    "min": {
+      "en": {
+        "synonyms": [
+          "minimum",
+          "lowest",
+          "smallest",
+          "minor",
+          "fewer",
+          "less"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "mínim",
+          "més baix",
+          "més petit",
+          "menor",
+          "menys"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "mínimo",
+          "más bajo",
+          "más pequeño",
+          "menor",
+          "menos"
+        ]
+      }
+    },
+    "avg": {
+      "en": {
+        "synonyms": [
+          "average",
+          "mean"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "promig",
+          "mitjà",
+          "mig"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "promedio",
+          "medio"
+        ]
+      }
+    },
+    "sum": {
+      "en": {
+        "synonyms": [
+          "total"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "suma",
+          "total"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "suma",
+          "total"
+        ]
+      }
+    }
+  },
+  "datetime_function_operator": {
+    "oldest": {
+      "en": {
+        "synonyms": [
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "més antic",
+          "més vell"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "más antiguo",
+          "más viejo"
+        ]
+      }
+    },
+    "newest": {
+      "en": {
+        "synonyms": [
+          "most recent"
+        ]
+      },
+      "ca": {
+        "synonyms": [
+          "més recent",
+          "més nou"
+        ]
+      },
+      "es": {
+        "synonyms": [
+          "más reciente",
+          "más nuevo"
+        ]
+      }
+    }
+  }
+}
