@@ -5,6 +5,7 @@ from app.app import app
 from app.data_source import DataSource
 from app.project import Project
 from ui.sidebar import project_selection
+from ui.utils.utils import clear_box, disable_input_focusout, get_input_value
 
 
 def admin():
@@ -253,10 +254,14 @@ def project_customization_container():
                  'you can choose a better one to replace it.'
         )
         # SYNONYMS
-        synonym = st.text_input(
+        st.text_input(
             label='Add synonym',
-            help='You can add synonyms to the field name'
+            help='You can add synonyms to the field name',
+            on_change=clear_box,
+            key='field_synonym',
+            args=['field_synonym']
         )
+        synonym = get_input_value('field_synonym')
         if synonym and synonym not in field.synonyms['en']:
             field.synonyms['en'].append(synonym)
         with st.expander('All synonyms', expanded=len(field.synonyms['en']) > 0):
@@ -301,34 +306,41 @@ def project_customization_container():
         )
 
     with col3:
-        with st.expander('Field categories', expanded=field.categorical):
-            if not field.categorical:
-                st.error('To see the field categories you must set this field as categorical')
+        st.text('Field categories')
+        selected_category = st.selectbox(
+            label='Select a category',
+            options=[c.value for c in field.categories] if field.categories else [],
+            disabled=not field.categorical
+        )
+        st.text_input(
+            label='Add synonym',
+            help='You can add synonyms to the field category',
+            disabled=not field.categorical,
+            on_change=clear_box,
+            key='category_synonym',
+            args=['category_synonym']
+        )
+        if not field.categorical:
+            st.error('To see the field categories you must set this field as categorical')
+        else:
+            category = field.get_category(selected_category)
+            synonym = get_input_value('category_synonym')
+            if synonym and synonym not in category.synonyms['en']:
+                category.synonyms['en'].append(synonym)
+            if category.synonyms['en']:
+                delete_synonyms = []
+                for s in category.synonyms['en']:
+                    selected = st.checkbox(s)
+                    if selected:
+                        delete_synonyms.append(s)
+                if st.button(label='Delete', key='delete_category_synonym'):
+                    for s in delete_synonyms:
+                        category.synonyms['en'].remove(s)
+                    st.rerun()
             else:
-                selected_category = st.selectbox(
-                    label='Select a category',
-                    options=[c.value for c in field.categories]
-                )
-                category = field.get_category(selected_category)
-                synonym = st.text_input(
-                    label='Add synonym',
-                    help='You can add synonyms to the field category'
-                )
-                if synonym and synonym not in category.synonyms['en']:
-                    category.synonyms['en'].append(synonym)
-                if category.synonyms['en']:
-                    delete_synonyms = []
-                    for s in category.synonyms['en']:
-                        selected = st.checkbox(s)
-                        if selected:
-                            delete_synonyms.append(s)
-                    if st.button(label='Delete', key='delete_category_synonym'):
-                        for s in delete_synonyms:
-                            category.synonyms['en'].remove(s)
-                        st.rerun()
-                else:
-                    st.error('There are no synonyms')
+                st.error('There are no synonyms')
 
 
 # Run it to display the Admin page
 admin()
+disable_input_focusout()
