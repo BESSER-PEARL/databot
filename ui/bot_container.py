@@ -4,6 +4,8 @@ import threading
 import pandas as pd
 import streamlit as st
 import websocket
+from besser.bot.platforms.websocket.message import Message
+from plotly import io
 
 from streamlit_chat import NO_AVATAR, message
 from streamlit.runtime.scriptrunner import add_script_run_ctx
@@ -32,9 +34,17 @@ def websocket_connection():
         streamlit_session = get_streamlit_session()
         payload: Payload = Payload.decode(payload_str)
         if payload.action == PayloadAction.BOT_REPLY_STR.value:
-            message = payload.message
+            content = payload.message
+            t = 'str'
         elif payload.action == PayloadAction.BOT_REPLY_DF.value:
-            message = pd.read_json(payload.message)
+            content = pd.read_json(payload.message)
+            t = 'dataframe'
+        elif payload.action == PayloadAction.BOT_REPLY_PLOTLY.value:
+            content = io.from_json(payload.message)
+            t = 'plotly'
+        message = Message(t, content, is_user=False)
+        if message.type == 'plotly':
+            app.selected_project.plot = message.content
         streamlit_session._session_state['queue'].put(message)
         streamlit_session._handle_rerun_script_request()
 
@@ -65,8 +75,10 @@ def check_websocket_connection():
 def bot_container():
     """Show the bot container"""
     def on_input_change():
-        user_input = st.session_state.user_input
-        st.session_state['history'].append((user_input, True))
+        user_input = st.session_state['user_input']
+        st.session_state['user_input'] = ''
+        message = Message('str', user_input, is_user=True)
+        st.session_state['history'].append(message)
         payload = Payload(action=PayloadAction.USER_MESSAGE,
                           message=user_input)
         try:
@@ -105,10 +117,11 @@ def bot_container():
 
             while not st.session_state['queue'].empty():
                 m = st.session_state['queue'].get()
-                st.session_state['history'].append((m, False))
+                st.session_state['history'].append(m)
             for m in st.session_state['history']:
-                message(m[0], is_user=m[1], key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
-    text = st.text_input(
+                if m.type == 'str':
+                    message(m.content, is_user=m.is_user, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
+    st.text_input(
         label='user_input',
         label_visibility='collapsed',
         placeholder='Write your question here',
