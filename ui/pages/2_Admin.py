@@ -83,53 +83,53 @@ def all_projects_container():
         if st.button('Train All', use_container_width=True, type='primary'):
             with general_buttons_cols[5]:
                 count = 0
-                my_bar = st.progress(0, text='Starting training of all projects')
+                progress_bar = st.progress(0, text='Starting training of all projects')
                 projects = [p for p in app.projects if not p.bot_running]
                 for project in projects:
-                    progress_text = f'Training {count+1}/{len(projects)}: {project.name}'
-                    my_bar.progress(count/len(projects), text=progress_text)
+                    progress_text = f'Training {count + 1}/{len(projects)}: {project.name}'
+                    progress_bar.progress(count / len(projects), text=progress_text)
                     project.train_bot()
                     count += 1
-                my_bar.progress(100, text='All projects have been successfully trained!')
+                progress_bar.progress(100, text='All projects have been successfully trained!')
     with general_buttons_cols[2]:
         if st.button('Run All', use_container_width=True, type='primary'):
             with general_buttons_cols[5]:
                 count = 0
-                my_bar = st.progress(0, text='Running all projects')
+                progress_bar = st.progress(0, text='Running all projects')
                 projects = [p for p in app.projects if (p.bot_trained and (not p.bot_running))]
                 for project in projects:
-                    progress_text = f'Running {count+1}/{len(projects)}: {project.name}'
-                    my_bar.progress(count/len(projects), text=progress_text)
+                    progress_text = f'Running {count + 1}/{len(projects)}: {project.name}'
+                    progress_bar.progress(count / len(projects), text=progress_text)
                     project.run_bot()
                     count += 1
-                my_bar.progress(100, text='All projects are now running !')
+                progress_bar.progress(100, text='All projects are now running !')
     with general_buttons_cols[3]:
         if st.button('Train & Run All', use_container_width=True, type='primary'):
             with general_buttons_cols[5]:
                 count = 0
-                my_bar = st.progress(0, text='Training and running all projects')
+                progress_bar = st.progress(0, text='Training and running all projects')
                 projects = [p for p in app.projects if not p.bot_running]
                 for project in projects:
                     progress_text = f'Training {count + 1}/{len(projects)}: {project.name}'
-                    my_bar.progress(count / len(projects), text=progress_text)
+                    progress_bar.progress(count / len(projects), text=progress_text)
                     project.train_bot()
                     progress_text = f'Running {count + 1}/{len(projects)}: {project.name}'
-                    my_bar.progress(count / len(projects), text=progress_text)
+                    progress_bar.progress(count / len(projects), text=progress_text)
                     project.run_bot()
                     count += 1
-                my_bar.progress(100, text='All projects trained and running!')
+                progress_bar.progress(100, text='All projects trained and running!')
     with general_buttons_cols[4]:
         if st.button('Stop All', use_container_width=True, type='primary'):
             with general_buttons_cols[5]:
                 count = 0
-                my_bar = st.progress(0, text='Stopping all projects')
+                progress_bar = st.progress(0, text='Stopping all projects')
                 projects = [p for p in app.projects if p.bot_running]
                 for project in projects:
                     progress_text = f'Stopping {count + 1}/{len(projects)}: {project.name}'
-                    my_bar.progress(count / len(projects), text=progress_text)
+                    progress_bar.progress(count / len(projects), text=progress_text)
                     project.stop_bot()
                     count += 1
-                my_bar.progress(100, text='All projects stopped')
+                progress_bar.progress(100, text='All projects stopped')
     for i, project in enumerate(app.projects):
         button_cols = st.columns([0.55, 0.15, 0.15, 0.15])
         with button_cols[0]:
