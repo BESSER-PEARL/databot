@@ -36,7 +36,6 @@ def session_monitoring(interval: int) -> None:
             for session_info in runtime._session_mgr.list_sessions():
                 session = session_info.session
                 if not runtime.is_active_session(session.id):
-                    runtime.close_session(session.id)
                     if 'websocket' in session.session_state:
                         session.session_state['websocket'].close()
-                    break
+                    runtime.close_session(session.id)
