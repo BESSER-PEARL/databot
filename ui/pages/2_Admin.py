@@ -25,6 +25,12 @@ def admin():
         project_selection()
         all_projects_button = st.button('All projects')
         new_project_button = st.button('New project')
+        if all_projects_button:
+            st.session_state['all_projects_button'] = True
+            st.session_state['new_project_button'] = False
+        if new_project_button:
+            st.session_state['all_projects_button'] = False
+            st.session_state['new_project_button'] = True
         st.divider()
         st.subheader('Settings')
         app.properties['openai_api_key'] = st.text_input(
@@ -33,17 +39,17 @@ def admin():
             type='password',
             value=app.properties['openai_api_key']
         )
-    if new_project_button or st.session_state['new_project_button']:
-        st.session_state['new_project_button'] = True  # lock the new project UI
+    if st.session_state['new_project_button'] or not app.selected_project:
+        if st.button('← Go back'):
+            st.session_state['all_projects_button'] = False
+            st.session_state['new_project_button'] = False
+            st.rerun()
         new_project_container()
-    elif all_projects_button or st.session_state['all_projects_button']:
+    elif st.session_state['all_projects_button']:
         # TODO: Cannot click on all projects when in new project
-        st.session_state['all_projects_button'] = True
         all_projects_container()
     elif app.selected_project:
         project_customization_container()
-    else:
-        new_project_container()
 
 
 def new_project_container():
