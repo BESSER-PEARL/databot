@@ -1,4 +1,9 @@
+from io import StringIO
+
+import chardet
 import pandas as pd
+import requests
+
 import streamlit as st
 
 from app.app import app
@@ -44,7 +49,9 @@ def admin():
             st.session_state['all_projects_button'] = False
             st.session_state['new_project_button'] = False
             st.rerun()
-        new_project_container()
+        upload_data()
+        st.divider()
+        import_open_data_portal()
     elif st.session_state['all_projects_button']:
         # TODO: Cannot click on all projects when in new project
         all_projects_container()
@@ -52,13 +59,10 @@ def admin():
         project_customization_container()
 
 
-def new_project_container():
-    """Show the New Project container."""
-    st.header('New project')
-    if st.button('← Go back'):
-        st.session_state['new_project_button'] = False  # exit the new project UI
-        st.rerun()
-    with st.form('new_project', clear_on_submit=True):
+def upload_data():
+    """Show the Upload data container."""
+    st.header('Upload data')
+    with st.form('upload_data', clear_on_submit=True):
         project_name = st.text_input(label='Project name', placeholder='Example: sales_project')
         uploaded_file = st.file_uploader(label="Choose a file", type='csv')
         # if uploaded_file is not None:
@@ -75,6 +79,127 @@ def new_project_container():
                 st.rerun()
 
 
+def import_open_data_portal():
+    st.header('Import Open Data portal')
+
+    with st.form('import_open_data_portal', clear_on_submit=False):
+        portal_type = st.radio("Select the portal's data management system",
+                               ['CKAN', 'uData'],
+                               horizontal=True)
+        base_url = st.text_input(label='Base URL', placeholder='Example: http://demo.ckan.org',
+                                 value='https://opendata-ajuntament.barcelona.cat/data')  # https://data.london.gov.uk
+        # Load all packages
+        submitted_base_url = st.form_submit_button(label="Load data sources")
+        import_projects = st.form_submit_button(label="Import", type='primary',
+                                                disabled='open_data_sources' not in st.session_state)
+    if portal_type == 'CKAN':
+        import_ckan_portal(base_url, submitted_base_url, import_projects)
+    else:
+        st.error('Currently, only CKAN data management systems are supported')
+
+
+def import_ckan_portal(base_url: str, submitted_base_url: bool, import_projects: bool):
+    if submitted_base_url:
+        package_list_url = base_url + '/api/action/package_list'
+        with st.spinner('Retrieving data sources...'):
+            # Get the list of packages
+            response = requests.get(package_list_url)
+            if response.status_code == 200:
+                package_list = response.json()['result']
+                package_search_url = base_url + f'/api/action/package_search?start=0&rows={len(package_list)}'
+                # Get the metadata of all packages
+                response = requests.get(package_search_url)
+                if response.status_code == 200:
+                    packages = response.json()['result']['results']
+                    st.session_state['open_data_sources'] = {}
+                    for package in packages:
+                        package_name = package['name']
+                        st.session_state['open_data_sources'][package_name] = {
+                            'title': package['title'],
+                            # TODO: ALSO CHECK THE 'format' FIELD IN 'resources': 'CSV'
+                            'count_csvs': len(
+                                [resource for resource in package['resources'] if resource['name'].endswith('.csv')]),
+                            'count_datasets': len(package['resources']),
+                            'metadata': package
+                        }
+                        # TODO: Now, Set 'Import' to True if it has CSV Data
+                        st.session_state['open_data_sources'][package_name]['import'] = True if \
+                            st.session_state['open_data_sources'][package_name]['count_csvs'] == 1 else False
+                    # Sort the data sources list
+                    st.session_state['open_data_sources'] = dict(
+                        sorted(st.session_state['open_data_sources'].items()))
+                    st.rerun()
+                else:
+                    st.error('Error in package_search')
+            else:
+                st.error('Error in package_list')
+
+    if 'open_data_sources' in st.session_state:  # If packages have been stored in the session...
+        if import_projects:
+            count_imports = 0
+            total_imports = (st.session_state['edited_packages_df']['Import'] == True).sum()
+            import_progress = st.progress(0, text=f'Imported 0/{total_imports} projects')
+        st.subheader(f"{len(st.session_state['open_data_sources'])} packages")
+        col1, col2, col3 = st.columns([0.2, 0.2, 0.6])
+        # Select/deselect all resources
+        with col1:
+            if 'select_all_checkboxes' not in st.session_state:
+                st.session_state['select_all_checkboxes'] = False
+
+            def update_all_checkboxes():
+                st.session_state['select_all_checkboxes'] = not st.session_state['select_all_checkboxes']
+                for _, metadata in st.session_state['open_data_sources'].items():
+                    metadata['import'] = st.session_state['select_all_checkboxes']
+
+            st.toggle(label="Select all", value=st.session_state['select_all_checkboxes'],
+                      on_change=update_all_checkboxes)
+        # Other buttons/toggles...
+        with col2:
+            pass
+        st.info('Only CSV files are supported. Packages without CSV data will not be imported.')
+        packages_df = pd.DataFrame(
+            [
+                {
+                    'Import': st.session_state['open_data_sources'][package]['import'],
+                    'Name': package,
+                    'Title': metadata['title'],
+                    'Resources': st.session_state['open_data_sources'][package]['count_datasets'],
+                    'CSVs': st.session_state['open_data_sources'][package]['count_csvs'],
+                } for package, metadata in st.session_state['open_data_sources'].items()
+            ]
+        )
+        st.session_state['edited_packages_df'] = st.data_editor(packages_df, use_container_width=True,
+                                                                disabled=['Name', 'Title', 'Resources', 'CSVs'])
+    if import_projects:
+        # Create all projects, download their data
+        # Iterate over the edited DataFrame to get the 'Import' boolean value
+        for index, row in st.session_state['edited_packages_df'].iterrows():
+            if row['Import']:
+                package = row['Name']
+                metadata = st.session_state['open_data_sources'][package]
+                # TODO: ONLY 1 CSV IN A PACKAGE ALLOWED
+                for resource in metadata['metadata']['resources']:
+                    if resource['name'].endswith('.csv'):
+                        data_url = resource['url']
+                        # Download data
+                        response = requests.get(data_url)
+                        try:
+                            result = chardet.detect(response.content)
+                            encoding = result['encoding']
+                            df = pd.read_csv(StringIO(response.content.decode(encoding)), low_memory=False)
+                            # Create project with the downloaded data into a DataFrame
+                            project = Project(app, package, df)
+                            count_imports += 1
+                            st.write(f'{package} - {resource["name"]}')
+                            import_progress.progress(count_imports / total_imports,
+                                                     text=f'Imported {count_imports}/{total_imports} projects')
+                            # TODO: This break forces only 1 csv being downloaded for each package
+                            break
+                        except Exception as e:
+                            st.error(f"Failed to fetch data from {package}")
+        st.rerun()
+
+
 def all_projects_container():
     """Show the All Projects container. It displays a list with all the created projects to easily train/run/stop
     them.
@@ -83,7 +208,8 @@ def all_projects_container():
     general_buttons_cols = st.columns([0.15, 0.15, 0.15, 0.15, 0.15, 0.25])
     with general_buttons_cols[0]:
         if st.button('← Go back', use_container_width=True):
-            st.session_state['all_projects_button'] = False  # exit the new project UI
+            st.session_state['new_project_button'] = False
+            st.session_state['all_projects_button'] = False
             st.rerun()
     with general_buttons_cols[1]:
         if st.button('Train All', use_container_width=True, type='primary'):
