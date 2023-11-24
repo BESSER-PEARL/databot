@@ -18,9 +18,8 @@ class Project:
         self.databot: DataBot = None
         self.bot_running = False
         self.bot_trained = False
-        self.df: DataFrame = df
+        self.df: DataFrame = df  # TODO: list of dataframes? for sources with +1 dataset (e.g. one x year) they must share the same data schema
         self.data_schema: DataSchema = DataSchema(self)
-        self.plot: plotly.graph_objs.Figure = None
         self.properties: dict = {
             'nlp.language': 'en',
             'websocket.port': 8765 + len(self.app.projects)

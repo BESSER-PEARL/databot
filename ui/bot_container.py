@@ -1,5 +1,4 @@
 import json
-import queue
 import threading
 import pandas as pd
 import streamlit as st
@@ -46,7 +45,7 @@ def websocket_connection():
             t = 'plotly'
         message = Message(t, content, is_user=False)
         if message.type == 'plotly':
-            app.selected_project.plot = message.content
+            streamlit_session._session_state[app.selected_project.name]['plot'] = message.content
         streamlit_session._session_state[app.selected_project.name]['queue'].put(message)
         streamlit_session._handle_rerun_script_request()
 
@@ -111,11 +110,6 @@ def bot_container():
             message(f'I am afraid I cannot help you right now because I have not been trained yet 😢', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
 
         else:
-            if app.selected_project.name not in st.session_state:
-                st.session_state[app.selected_project.name] = {
-                    'history': [],
-                    'queue': queue.Queue()
-                }
             check_websocket_connection()
             ws = st.session_state[app.selected_project.name]['websocket']
 

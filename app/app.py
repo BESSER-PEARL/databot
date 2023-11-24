@@ -21,7 +21,6 @@ class App:
         self.selected_project: Project = None
         self.speech2text: Speech2Text = Speech2Text(self)
 
-
     def add_project(self, project: Project):
         self.projects.append(project)
 
