@@ -1,11 +1,12 @@
 import io
-from typing import TYPE_CHECKING
-
 import librosa
+
 from transformers import AutoProcessor, TFAutoModelForSpeechSeq2Seq, logging
+from typing import TYPE_CHECKING
 
 from besser.bot.nlp.speech2text.speech2text import Speech2Text
 
+from ui.utils.session_state_keys import NLP_LANGUAGE, NLP_STT_HF_MODEL
 
 if TYPE_CHECKING:
     from app.app import App
@@ -32,13 +33,13 @@ class Speech2Text(Speech2Text):
 
     def __init__(self, app: 'App'):
         self.app: 'App' = app
-        self._model_name: str = self.app.properties['nlp.speech2text.hf.model']
+        self._model_name: str = self.app.properties[NLP_STT_HF_MODEL]
         self._processor = AutoProcessor.from_pretrained(self._model_name)
         self._model = TFAutoModelForSpeechSeq2Seq.from_pretrained(self._model_name)
         self._sampling_rate: int = 16000
         # self.model.config.forced_decoder_ids = None
         self._forced_decoder_ids = self._processor.get_decoder_prompt_ids(
-            language=self.app.properties['nlp.language'], task="transcribe"
+            language=self.app.properties[NLP_LANGUAGE], task="transcribe"
         )
 
     def speech2text(self, speech: bytes):

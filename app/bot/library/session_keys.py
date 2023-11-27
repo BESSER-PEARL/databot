@@ -1,8 +1,8 @@
 # Session Keys
 
-FILTER_FIELD_OPTIONS = "FILTER_FIELD_OPTIONS"
-VIEW_FIELD_OPTIONS = "VIEW_FIELD_OPTIONS"
-PAGE_COUNT = "PAGE_COUNT"
+FILTER_FIELD_OPTIONS = "filter_field_options"
+VIEW_FIELD_OPTIONS = "view_field_options"
+PAGE_COUNT = "page_count"
 ERROR = "error"
 STOP = "stop"
 RESULTSET_NUM_ROWS = "resultset_num_rows"

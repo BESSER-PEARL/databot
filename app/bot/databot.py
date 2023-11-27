@@ -74,6 +74,6 @@ class DataBot:
         self.s0.when_no_intent_matched_go_to(self.llm_query_workflow.llm_query)
 
     def _set_bot_properties(self):
-        self.bot.set_property(WEBSOCKET_PORT, self.project.properties['websocket.port'])
-        self.bot.set_property(NLP_LANGUAGE, self.project.properties['nlp.language'])
+        self.bot.set_property(WEBSOCKET_PORT, self.project.properties[WEBSOCKET_PORT.name])
+        self.bot.set_property(NLP_LANGUAGE, self.project.properties[NLP_LANGUAGE.name])
 

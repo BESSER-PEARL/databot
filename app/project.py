@@ -1,10 +1,9 @@
-from typing import TYPE_CHECKING
-
-import plotly.graph_objs
 from pandas import DataFrame
+from typing import TYPE_CHECKING
 
 from app.bot.databot import DataBot
 from schema.data_schema import DataSchema
+from ui.utils.session_state_keys import NLP_LANGUAGE, WEBSOCKET_PORT
 
 if TYPE_CHECKING:
     from app.app import App
@@ -21,8 +20,8 @@ class Project:
         self.df: DataFrame = df  # TODO: list of dataframes? for sources with +1 dataset (e.g. one x year) they must share the same data schema
         self.data_schema: DataSchema = DataSchema(self)
         self.properties: dict = {
-            'nlp.language': 'en',
-            'websocket.port': 8765 + len(self.app.projects)
+            NLP_LANGUAGE: 'en',
+            WEBSOCKET_PORT: 8765 + len(self.app.projects)
         }
         self.app.add_project(self)
 

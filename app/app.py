@@ -3,15 +3,16 @@ import streamlit as st
 
 from app.project import Project
 from app.speech2text import Speech2Text
+from ui.utils.session_state_keys import APP, NLP_LANGUAGE, NLP_STT_HF_MODEL, OPENAI_API_KEY
 
 
 class App:
 
     def __init__(self):
         self.properties: dict = {
-            'openai_api_key': None,
-            'nlp.language': 'en', # used for the speech2text component, there is 1 for all the projects
-            'nlp.speech2text.hf.model': 'openai/whisper-tiny',
+            OPENAI_API_KEY: None,
+            NLP_LANGUAGE: 'en',  # used for the speech2text component, there is 1 for all the projects
+            NLP_STT_HF_MODEL: 'openai/whisper-tiny',
         }
         self.projects: list[Project] = []
         self.speech2text: Speech2Text = Speech2Text(self)
@@ -36,6 +37,6 @@ def create_app():
 
 
 def get_app():
-    if 'app' not in st.session_state:
-        st.session_state['app'] = create_app()
-    return st.session_state['app']
+    if APP not in st.session_state:
+        st.session_state[APP] = create_app()
+    return st.session_state[APP]
