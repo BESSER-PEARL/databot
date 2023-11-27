@@ -1,8 +1,12 @@
+import threading
 import time
+import streamlit as st
 
 from streamlit.runtime import Runtime
 from streamlit.runtime.app_session import AppSession
-from streamlit.runtime.scriptrunner import get_script_run_ctx
+from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
+
+SESSION_MONITORING_INTERVAL = 3
 
 
 def get_streamlit_session() -> AppSession or None:
@@ -39,3 +43,12 @@ def session_monitoring(interval: int) -> None:
                     if 'websocket' in session.session_state:
                         session.session_state['websocket'].close()
                     runtime.close_session(session.id)
+
+
+@st.cache_resource
+def run_thread_session_monitoring():
+    session_monitoring_thread = threading.Thread(target=session_monitoring,
+                                                 kwargs={'interval': SESSION_MONITORING_INTERVAL})
+    add_script_run_ctx(session_monitoring_thread)
+    session_monitoring_thread.start()
+    return True

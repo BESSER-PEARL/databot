@@ -6,10 +6,12 @@ import requests
 
 import streamlit as st
 
-from app.app import app
+from app.app import get_app
 from app.project import Project
 from ui.sidebar import project_selection
 from ui.utils.utils import clear_box, disable_input_focusout, get_input_value
+
+st.set_page_config(layout="wide")
 
 
 def admin():
@@ -21,7 +23,8 @@ def admin():
 
     - All projects
     """
-    st.set_page_config(layout="wide")
+    app = get_app()
+
     if 'new_project_button' not in st.session_state:
         st.session_state['new_project_button'] = False
     if 'all_projects_button' not in st.session_state:
@@ -61,6 +64,8 @@ def admin():
 
 def upload_data():
     """Show the Upload data container."""
+    app = get_app()
+
     st.header('Upload data')
     with st.form('upload_data', clear_on_submit=True):
         project_name = st.text_input(label='Project name', placeholder='Example: sales_project')
@@ -99,6 +104,8 @@ def import_open_data_portal():
 
 
 def import_ckan_portal(base_url: str, submitted_base_url: bool, import_projects: bool):
+    app = get_app()
+
     if submitted_base_url:
         package_list_url = base_url + '/api/action/package_list'
         with st.spinner('Retrieving data sources...'):
@@ -204,6 +211,8 @@ def all_projects_container():
     """Show the All Projects container. It displays a list with all the created projects to easily train/run/stop
     them.
     """
+    app = get_app()
+
     st.header('All projects')
     general_buttons_cols = st.columns([0.15, 0.15, 0.15, 0.15, 0.15, 0.25])
     with general_buttons_cols[0]:
@@ -303,6 +312,8 @@ def all_projects_container():
 
 def project_customization_container():
     """Show the Project Customization container."""
+    app = get_app()
+
     project = app.selected_project
     st.header(f'Project: {project.name}')
     # TRAIN/RUN/STOP BUTTONS

@@ -1,12 +1,8 @@
-import threading
-
 import pandas as pd
 import streamlit as st
-from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 from app.project import Project
 from app.speech2text import Speech2Text
-from ui.session_monitoring import session_monitoring
 
 
 class App:
@@ -32,7 +28,7 @@ class App:
 
 
 @st.cache_resource
-def get_app():
+def create_app():
     _app = App()
     if not _app.projects:
         # TESTING PROJECT
@@ -41,17 +37,7 @@ def get_app():
     return _app
 
 
-app = get_app()
-
-
-@st.cache_data
-def run_thread_session_monitoring():
-    SESSION_MONITORING_INTERVAL = 3
-    session_monitoring_thread = threading.Thread(target=session_monitoring,
-                                                 kwargs={'interval': SESSION_MONITORING_INTERVAL})
-    add_script_run_ctx(session_monitoring_thread)
-    session_monitoring_thread.start()
-    return True
-
-
-run_thread_session_monitoring()
+def get_app():
+    if 'app' not in st.session_state:
+        st.session_state['app'] = create_app()
+    return st.session_state['app']

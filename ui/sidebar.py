@@ -1,10 +1,12 @@
 import streamlit as st
 
-from app.app import app
+from app.app import get_app
 
 
 def project_selection():
     """Show a project selection container"""
+    app = get_app()
+
     st.subheader('Select a project')
     selected_project = st.selectbox(
         label='Select a project',

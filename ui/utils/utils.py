@@ -1,5 +1,5 @@
 import streamlit as st
-import streamlit.components.v1 as components
+from streamlit.components.v1 import html
 
 
 def clear_box(key: str):
@@ -33,7 +33,7 @@ def get_input_value(key):
 def disable_input_focusout():
     """Add a script to the UI html code to avoid introducing a value in a text input box when it is focused out, so it
     is only introduced when the enter key is pressed."""
-    components.html(
+    html(
             """
         <script>
         const doc = window.parent.document;

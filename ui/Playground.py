@@ -1,21 +1,25 @@
 import queue
 import sys
-
 import streamlit as st
+
 from streamlit.runtime import Runtime
 from streamlit.web import cli as stcli
 
 from ui.bot_container import bot_container
-from app.app import app
+from app.app import create_app, get_app
+from ui.session_monitoring import run_thread_session_monitoring
 from ui.sidebar import project_selection
 from ui.utils.utils import disable_input_focusout
+
+st.set_page_config(layout="wide")
 
 BOT_CONTAINER_WIDTH = 0.3
 
 
 def playground():
     """Show the playground container"""
-    st.set_page_config(layout="wide")
+    app = get_app()
+
     with st.sidebar:
         project_selection()
     st.title('📊 BESSER Conversational Data Analysis')
@@ -60,11 +64,14 @@ def playground():
 
 
 if __name__ == "__main__":
-
     if st.runtime.exists():
+        # Create the app, only 1 time, shared across sessions
+        create_app()
+        # Run session monitoring in another thread, only 1 time
+        run_thread_session_monitoring()
+        # Run the Playground UI
         playground()
         disable_input_focusout()
-
     else:
         sys.argv = ["streamlit", "run", sys.argv[0]]
         sys.exit(stcli.main())

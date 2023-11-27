@@ -12,7 +12,7 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 from besser.bot.platforms.payload import Payload, PayloadAction, PayloadEncoder
 
-from app.app import app
+from app.app import get_app
 from ui.session_monitoring import get_streamlit_session
 from ui.utils.tweaker import st_tweaker
 from streamlit.components.v1 import html
@@ -30,6 +30,8 @@ def m_key():
 
 def websocket_connection():
     """Create a WebSocket connection for a new user session."""
+    app = get_app()
+
     def on_message(ws, payload_str):
         # https://github.com/streamlit/streamlit/issues/2838
         streamlit_session = get_streamlit_session()
@@ -65,6 +67,8 @@ def check_websocket_connection():
 
     If there is a dead connection, delete it from the session_state.
     """
+    app = get_app()
+
     if 'websocket_thread' in st.session_state[app.selected_project.name] and not st.session_state[app.selected_project.name]['websocket_thread'].is_alive():
         del st.session_state[app.selected_project.name]['websocket_thread']
         del st.session_state[app.selected_project.name]['websocket']
@@ -77,6 +81,7 @@ def bot_container():
     """Show the bot container"""
     global m_count
     m_count = 0
+    app = get_app()
 
     def on_input_change():
         user_input = st.session_state['user_input']
@@ -157,4 +162,4 @@ def bot_container():
             scroll({len(st.session_state[app.selected_project.name]['history'])})
         </script>
         """
-        st.components.v1.html(js)
+        html(js)
