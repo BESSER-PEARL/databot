@@ -34,7 +34,7 @@ def disable_input_focusout():
     """Add a script to the UI html code to avoid introducing a value in a text input box when it is focused out, so it
     is only introduced when the enter key is pressed."""
     html(
-            """
+        """
         <script>
         const doc = window.parent.document;
         const inputs = doc.querySelectorAll('input');
@@ -46,7 +46,8 @@ def disable_input_focusout():
             });
         });
     
-        </script>""",
-            height=0,
-            width=0,
+        </script>
+        """,
+        height=0,
+        width=0,
         )
