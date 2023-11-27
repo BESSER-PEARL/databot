@@ -6,6 +6,8 @@ from streamlit.runtime import Runtime
 from streamlit.runtime.app_session import AppSession
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
+from ui.session_state_keys import PROJECTS, WEBSOCKET
+
 SESSION_MONITORING_INTERVAL = 3
 
 
@@ -29,20 +31,25 @@ def session_monitoring(interval: int) -> None:
     runtime_set = False
     runtime = None
     while True:
-        time.sleep(interval)
-        if not runtime_set:
-            try:
-                runtime: Runtime = Runtime.instance()
-                runtime_set = True
-            except Exception as e:
-                pass
-        else:
-            for session_info in runtime._session_mgr.list_sessions():
-                session = session_info.session
-                if not runtime.is_active_session(session.id):
-                    if 'websocket' in session.session_state:
-                        session.session_state['websocket'].close()
-                    runtime.close_session(session.id)
+        try:
+            time.sleep(interval)
+            if not runtime_set:
+                try:
+                    runtime: Runtime = Runtime.instance()
+                    runtime_set = True
+                except Exception as e:
+                    pass
+            else:
+                for session_info in runtime._session_mgr.list_sessions():
+                    session = session_info.session
+                    if not runtime.is_active_session(session.id):
+                        if PROJECTS in session.session_state:
+                            for project in session.session_state[PROJECTS]:
+                                if WEBSOCKET in session.session_state[PROJECTS][project]:
+                                    session.session_state[PROJECTS][project][WEBSOCKET].close()
+                        runtime.close_session(session.id)
+        except Exception as e:
+            print(e)
 
 
 @st.cache_resource
