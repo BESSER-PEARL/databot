@@ -24,6 +24,7 @@ def admin():
     - All projects
     """
     app = get_app()
+    project = st.session_state['selected_project'] if 'selected_project' in st.session_state else None
 
     if 'new_project_button' not in st.session_state:
         st.session_state['new_project_button'] = False
@@ -47,7 +48,7 @@ def admin():
             type='password',
             value=app.properties['openai_api_key']
         )
-    if st.session_state['new_project_button'] or not app.selected_project:
+    if st.session_state['new_project_button'] or not project:
         if st.button('← Go back'):
             st.session_state['all_projects_button'] = False
             st.session_state['new_project_button'] = False
@@ -58,7 +59,7 @@ def admin():
     elif st.session_state['all_projects_button']:
         # TODO: Cannot click on all projects when in new project
         all_projects_container()
-    elif app.selected_project:
+    elif project:
         project_customization_container()
 
 
@@ -79,7 +80,7 @@ def upload_data():
                 if project_name is None or project_name == '':
                     project_name = f'project_{len(app.projects)}'
                 project = Project(app, project_name, pd.read_csv(uploaded_file))
-                app.selected_project = project
+                st.session_state['selected_project'] = project
                 st.session_state['new_project_button'] = False  # exit the new project UI
                 st.rerun()
 
@@ -312,9 +313,7 @@ def all_projects_container():
 
 def project_customization_container():
     """Show the Project Customization container."""
-    app = get_app()
-
-    project = app.selected_project
+    project = st.session_state['selected_project']
     st.header(f'Project: {project.name}')
     # TRAIN/RUN/STOP BUTTONS
     col1, col2, col3, col4 = st.columns([0.15, 0.15, 0.15, 0.55])

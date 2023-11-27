@@ -14,7 +14,6 @@ class App:
             'nlp.speech2text.hf.model': 'openai/whisper-tiny',
         }
         self.projects: list[Project] = []
-        self.selected_project: Project = None
         self.speech2text: Speech2Text = Speech2Text(self)
 
     def add_project(self, project: Project):
@@ -33,7 +32,6 @@ def create_app():
     if not _app.projects:
         # TESTING PROJECT
         project = Project(_app, 'test_project', pd.read_csv('../datasets/sales.csv'))
-        _app.selected_project = project
     return _app
 
 

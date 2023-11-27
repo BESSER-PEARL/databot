@@ -30,7 +30,7 @@ def m_key():
 
 def websocket_connection():
     """Create a WebSocket connection for a new user session."""
-    app = get_app()
+    project = st.session_state['selected_project']
 
     def on_message(ws, payload_str):
         # https://github.com/streamlit/streamlit/issues/2838
@@ -42,22 +42,22 @@ def websocket_connection():
         elif payload.action == PayloadAction.BOT_REPLY_DF.value:
             content = pd.read_json(payload.message)
             t = 'dataframe'
+            streamlit_session._session_state['projects'][project.name]['table'] = content
         elif payload.action == PayloadAction.BOT_REPLY_PLOTLY.value:
             content = io.from_json(payload.message)
             t = 'plotly'
+            streamlit_session._session_state['projects'][project.name]['plot'] = content
         message = Message(t, content, is_user=False)
-        if message.type == 'plotly':
-            streamlit_session._session_state[app.selected_project.name]['plot'] = message.content
-        streamlit_session._session_state[app.selected_project.name]['queue'].put(message)
+        streamlit_session._session_state['projects'][project.name]['queue'].put(message)
         streamlit_session._handle_rerun_script_request()
 
-    ws = websocket.WebSocketApp(f"ws://localhost:{app.selected_project.properties['websocket.port']}/",
+    ws = websocket.WebSocketApp(f"ws://localhost:{project.properties['websocket.port']}/",
                                 on_message=on_message)
     websocket_thread = threading.Thread(target=ws.run_forever)
     add_script_run_ctx(websocket_thread)
     websocket_thread.start()
-    st.session_state[app.selected_project.name]['websocket'] = ws
-    st.session_state[app.selected_project.name]['websocket_thread'] = websocket_thread
+    st.session_state['projects'][project.name]['websocket'] = ws
+    st.session_state['projects'][project.name]['websocket_thread'] = websocket_thread
 
 
 def check_websocket_connection():
@@ -67,13 +67,12 @@ def check_websocket_connection():
 
     If there is a dead connection, delete it from the session_state.
     """
-    app = get_app()
+    project = st.session_state['selected_project']
 
-    if 'websocket_thread' in st.session_state[app.selected_project.name] and not st.session_state[app.selected_project.name]['websocket_thread'].is_alive():
-        del st.session_state[app.selected_project.name]['websocket_thread']
-        del st.session_state[app.selected_project.name]['websocket']
-    if 'websocket' not in st.session_state[app.selected_project.name] and 'websocket_thread' not in st.session_state[app.selected_project.name]:
-        print('retrying websocket connection...')
+    if 'websocket_thread' in st.session_state['projects'][project.name] and not st.session_state['projects'][project.name]['websocket_thread'].is_alive():
+        del st.session_state['projects'][project.name]['websocket_thread']
+        del st.session_state['projects'][project.name]['websocket']
+    if 'websocket' not in st.session_state['projects'][project.name] and 'websocket_thread' not in st.session_state['projects'][project.name]:
         websocket_connection()
 
 
@@ -82,17 +81,18 @@ def bot_container():
     global m_count
     m_count = 0
     app = get_app()
+    project = st.session_state['selected_project'] if 'selected_project' in st.session_state else None
 
     def on_input_change():
         user_input = st.session_state['user_input']
         st.session_state['user_input'] = ''
         message = Message('str', user_input, is_user=True)
-        st.session_state[app.selected_project.name]['history'].append(message)
+        st.session_state['projects'][project.name]['history'].append(message)
         payload = Payload(action=PayloadAction.USER_MESSAGE,
                           message=user_input)
         try:
             ws.send(json.dumps(payload, cls=PayloadEncoder))
-        except:
+        except Exception as e:
             st.write('No connection established')
 
     chat_box_css = """
@@ -107,21 +107,19 @@ def bot_container():
     chat_box = st_tweaker.columns([1], id='chat_box', css=chat_box_css)
     with chat_box[0]:
         st.write('')
-        if not app.selected_project:
+        if not project:
             message(f'Hi! This is where you will be able to chat with an intelligent assistant about data sources. First, you need to create a project with some data. You can do it in the Admin page!', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
-
-        elif not app.selected_project.bot_running:
-            message(f'Hi! I am your assistant to explore {app.selected_project.name}.', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
+        elif not project.bot_running:
+            message(f'Hi! I am your assistant to explore {project.name}.', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
             message(f'I am afraid I cannot help you right now because I have not been trained yet 😢', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
-
         else:
             check_websocket_connection()
-            ws = st.session_state[app.selected_project.name]['websocket']
+            ws = st.session_state['projects'][project.name]['websocket']
 
-            while not st.session_state[app.selected_project.name]['queue'].empty():
-                m = st.session_state[app.selected_project.name]['queue'].get()
-                st.session_state[app.selected_project.name]['history'].append(m)
-            for m in st.session_state[app.selected_project.name]['history']:
+            while not st.session_state['projects'][project.name]['queue'].empty():
+                m = st.session_state['projects'][project.name]['queue'].get()
+                st.session_state['projects'][project.name]['history'].append(m)
+            for m in st.session_state['projects'][project.name]['history']:
                 if m.type == 'str':
                     message(m.content, is_user=m.is_user, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
                 elif m.type == 'audio':
@@ -134,16 +132,16 @@ def bot_container():
             placeholder='Write your question here',
             on_change=on_input_change,
             key="user_input",
-            disabled=not app.selected_project or not app.selected_project.bot_running
+            disabled=not project or not project.bot_running
         )
     with col2:
         if voice_bytes := audio_recorder(text=None, pause_threshold=2, icon_size='2x', neutral_color='#6b6b6b'):
             if ('last_voice_message' not in st.session_state or st.session_state['last_voice_message'] != voice_bytes) \
-                    and app.selected_project and app.selected_project.bot_running:
+                    and project and project.bot_running:
                 st.session_state['last_voice_message'] = voice_bytes
                 # Encode the audio bytes to a base64 string
                 voice_message = Message(t='audio', content=voice_bytes, is_user=True)
-                st.session_state[app.selected_project.name]['history'].append(voice_message)
+                st.session_state['projects'][project.name]['history'].append(voice_message)
                 transcription = app.speech2text.speech2text(voice_bytes)
                 payload = Payload(action=PayloadAction.USER_MESSAGE, message=transcription)
                 try:
@@ -151,7 +149,7 @@ def bot_container():
                 except Exception as e:
                     st.error('Your message could not be sent. The connection is already closed')
 
-    if app.selected_project and app.selected_project.name in st.session_state:
+    if project and project.name in st.session_state['projects']:
         # Scroll the chat box to the bottom
         js = f"""
         <script>
@@ -159,7 +157,7 @@ def bot_container():
                 var objDiv = parent.document.getElementById("chat_box");
                 objDiv.scrollTop = objDiv.scrollHeight + 99999;
             }}
-            scroll({len(st.session_state[app.selected_project.name]['history'])})
+            scroll({len(st.session_state['projects'][project.name]['history'])})
         </script>
         """
         html(js)
