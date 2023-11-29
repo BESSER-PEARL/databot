@@ -17,6 +17,6 @@ class HistogramChart(AbstractQueryWorkflow):
         predicted_intent: IntentClassifierPrediction = session.get('predicted_intent')
         df = self.databot.project.df
         field = predicted_intent.get_parameter(session_keys.FIELD).value
-        fig = px.histogram(df, x=field)
-        session.reply(f'Sure! This is the histogram of {field}')
-        self.databot.platform.reply_plotly(session, fig)
+        fig = px.histogram(df, x=field, title=f'Histogram of {field}')
+        self.platform.reply(session, f'Sure! This is the histogram of {field}')
+        self.platform.reply_plotly(session, fig)

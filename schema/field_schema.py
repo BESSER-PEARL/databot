@@ -1,7 +1,7 @@
 from typing import TYPE_CHECKING
 
 from schema.category import Category
-from schema.field_type import FieldType
+from schema.field_type import FieldType, NUMERIC, TEXTUAL
 
 if TYPE_CHECKING:
     from schema.data_schema import DataSchema
@@ -16,9 +16,9 @@ class FieldSchema:
         self.synonyms: dict[str, list[str]] = {'en': []}
         t = self.data_schema.project.df[self.original_name].dtype
         if t == 'object':
-            t = 'textual'
+            t = TEXTUAL
         if t == 'int64' or t == 'float64':
-            t = 'numeric'
+            t = NUMERIC
         self.type: FieldType = FieldType(t)  # TODO: infer type (datetime, etc)
         self.num_different_values: int = self.data_schema.project.df[self.original_name].nunique()
         self.key: bool = False

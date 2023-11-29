@@ -20,5 +20,5 @@ class LineChart(AbstractQueryWorkflow):
         field_x = predicted_intent.get_parameter(session_keys.FIELD_X).value
         field_y = predicted_intent.get_parameter(session_keys.FIELD_Y).value
         fig = px.line(df, x=field_x, y=field_y)
-        session.reply(f'Sure! This is the line chart of {field_x} over {field_y}')
-        self.databot.platform.reply_plotly(session, fig)
+        self.platform.reply(session, f'Sure! This is the line chart of {field_x} over {field_y}')
+        self.platform.reply_plotly(session, fig)

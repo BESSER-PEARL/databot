@@ -15,7 +15,7 @@ from besser.bot.platforms.payload import Payload, PayloadAction, PayloadEncoder
 from app.app import get_app
 from ui.session_monitoring import get_streamlit_session
 from ui.utils.session_state_keys import AUDIO, DATAFRAME, HISTORY, LAST_VOICE_MESSAGE, PLOT, PLOTLY, PROJECTS, QUEUE, \
-    SELECTED_PROJECT, STR, TABLE, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, WEBSOCKET_THREAD
+    SELECTED_PROJECT, SESSION_ID, STR, TABLE, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, WEBSOCKET_THREAD
 from ui.utils.tweaker import st_tweaker
 from streamlit.components.v1 import html
 
@@ -40,6 +40,15 @@ def websocket_connection():
         payload: Payload = Payload.decode(payload_str)
         if payload.action == PayloadAction.BOT_REPLY_STR.value:
             content = payload.message
+            try:
+                # First bot message contains the user's session id (bot session, not streamlit session)
+                message_dict = json.loads(payload.message)
+                if SESSION_ID in message_dict:
+                    streamlit_session._session_state[PROJECTS][project.name][SESSION_ID] = message_dict[SESSION_ID]
+                    streamlit_session._handle_rerun_script_request()
+                    return
+            except Exception as e:
+                pass
             t = STR
         elif payload.action == PayloadAction.BOT_REPLY_DF.value:
             content = pd.read_json(payload.message)

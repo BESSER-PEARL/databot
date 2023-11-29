@@ -10,12 +10,14 @@ from besser.bot.platforms.websocket.websocket_platform import WebSocketPlatform
 
 from app.bot.library.databot_entities import DataBotEntities
 from app.bot.library.databot_intents import DataBotIntents
+from app.bot.library.session_keys import FILTERS
 from app.bot.workflows.check_parameters import CheckParameters
 from app.bot.workflows.llm_query import LLMQuery
 from app.bot.workflows.queries.bar_chart import BarChart
 from app.bot.workflows.queries.histogram_chart import HistogramChart
 from app.bot.workflows.queries.line_chart import LineChart
 from app.bot.workflows.queries.row_count import RowCount
+from ui.utils.session_state_keys import SESSION_ID
 
 if TYPE_CHECKING:
     from app.project import Project
@@ -45,6 +47,8 @@ class DataBot:
         self.check_parameters_workflow = CheckParameters(self)
 
         def initial_body(session: Session):
+            session.set(FILTERS, [])
+            session.reply(json.dumps({SESSION_ID: session.id}))
             session.reply(self.messages['greetings'])
 
         self.initial.set_body(initial_body)

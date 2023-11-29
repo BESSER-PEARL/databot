@@ -17,6 +17,7 @@ class AbstractQueryWorkflow(ABC):
         self.databot: 'DataBot' = databot
 
         self.main_state = databot.bot.new_state(self.__class__.__name__)
+        self.platform = self.databot.platform
 
         def check_conditions(session: Session, event_params: dict):
             session_var = session.get(event_params['session_key'])
@@ -31,7 +32,6 @@ class AbstractQueryWorkflow(ABC):
                 logging.error('Intent parameters are not OK')
                 return
             self.answer(session)
-            session.set(session_keys.ALL_OK, True)
 
         self.main_state.set_body(body)
 

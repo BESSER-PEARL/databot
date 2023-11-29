@@ -1,6 +1,6 @@
 # Session Keys
 
-FILTER_FIELD_OPTIONS = "filter_field_options"
+FILTERS = 'filters'
 VIEW_FIELD_OPTIONS = "view_field_options"
 PAGE_COUNT = "page_count"
 ERROR = "error"
