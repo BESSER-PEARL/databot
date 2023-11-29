@@ -14,8 +14,9 @@ from besser.bot.platforms.payload import Payload, PayloadAction, PayloadEncoder
 
 from app.app import get_app
 from ui.session_monitoring import get_streamlit_session
-from ui.utils.session_state_keys import AUDIO, DATAFRAME, HISTORY, LAST_VOICE_MESSAGE, PLOT, PLOTLY, PROJECTS, QUEUE, \
-    SELECTED_PROJECT, SESSION_ID, STR, TABLE, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, WEBSOCKET_THREAD
+from ui.utils.session_state_keys import AUDIO, DATAFRAME, HISTORY, LAST_VOICE_MESSAGE, PLOTS, PLOTLY, PLOT_INDEX, \
+    PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, STR, TABLES, TABLE_INDEX, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, \
+    WEBSOCKET_THREAD
 from ui.utils.tweaker import st_tweaker
 from streamlit.components.v1 import html
 
@@ -53,11 +54,13 @@ def websocket_connection():
         elif payload.action == PayloadAction.BOT_REPLY_DF.value:
             content = pd.read_json(payload.message)
             t = DATAFRAME
-            streamlit_session._session_state[PROJECTS][project.name][TABLE] = content
+            streamlit_session._session_state[PROJECTS][project.name][TABLES].append(content)
+            streamlit_session._session_state[PROJECTS][project.name][TABLE_INDEX] = len(streamlit_session._session_state[PROJECTS][project.name][TABLES]) - 1
         elif payload.action == PayloadAction.BOT_REPLY_PLOTLY.value:
             content = io.from_json(payload.message)
             t = PLOTLY
-            streamlit_session._session_state[PROJECTS][project.name][PLOT] = content
+            streamlit_session._session_state[PROJECTS][project.name][PLOTS].append(content)
+            streamlit_session._session_state[PROJECTS][project.name][PLOT_INDEX] = len(streamlit_session._session_state[PROJECTS][project.name][PLOTS]) - 1
         message = Message(t, content, is_user=False)
         streamlit_session._session_state[PROJECTS][project.name][QUEUE].put(message)
         streamlit_session._handle_rerun_script_request()
