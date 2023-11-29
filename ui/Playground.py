@@ -89,10 +89,6 @@ def playground():
                                 target_field_schema = field_schema
                                 break
                     with operator_col:
-                        numeric_operators = ['=', '!=', '<', '<=', '>', '>=']
-                        textual_operators = ['equals', 'different', 'contains', 'starts with', 'ends with']
-                        datetime_operators = ['equals', 'different', 'between', 'before', 'after']
-                        boolean_operators = ['equals']
                         target_operators = []
                         if target_field_schema:
                             if target_field_schema.type.t == NUMERIC:
@@ -109,29 +105,40 @@ def playground():
                             options=target_operators,
                             index=0
                         )
+                    filter_value_ok = True
                     with value_col:
                         if filter_operator:
                             if target_field_schema.type.t == NUMERIC:
-                                filter_value = st.number_input('Choose a NUMBER', format='%f')
+                                filter_value = st.number_input('Choose a NUMBER', value=None, format='%f')
                             elif target_field_schema.type.t == TEXTUAL:
                                 filter_value = st.text_input('Choose a value')
                             elif target_field_schema.type.t == DATETIME:
                                 if filter_operator == 'between':
-                                    value = []
+                                    date_interval = st.date_input('Choose a date', value=[], format='DD/MM/YYYY')
+                                    time0 = st.time_input('Starting time', value=None, step=60)
+                                    time1 = st.time_input('Ending time', value=None, step=60)
+                                    if len(date_interval) == 2:
+                                        filter_value = [(date_interval[0], time0), (date_interval[1], time1)]
+                                    else:
+                                        filter_value = [(None, time0), (None, time1)]
+                                    if (len(date_interval) == 1) or (time0 and not time1) or (not time0 and time1) or time0 > time1:
+                                        st.error('Set a proper date interval, time interval or both')
+                                        filter_value_ok = False
                                 else:
-                                    value = None
-                                filter_value = st.date_input('Choose a date', value=value, format='DD/MM/YYYY')
+                                    date = st.date_input('Choose a date', value=None, format='DD/MM/YYYY')
+                                    time = st.time_input('Choose a time', value=None, step=60)
+                                    filter_value = [(date, time)]
                             elif target_field_schema.type.t == BOOLEAN:
                                 filter_value = st.selectbox('Choose a value', options=[True, False], index=0)
                         else:
                             st.text_input('Select a value', disabled=True, placeholder='No operator selected')
 
                     session_id = st.session_state[PROJECTS][project.name][SESSION_ID]
-                    if session_id:
+                    if session_id and project.databot.bot.get_session(session_id):
                         bot_filters: list = project.databot.bot.get_session(session_id).get(FILTERS)
                         if st.button(
                                 label='Apply filter',
-                                disabled=not (target_field_schema and filter_operator),
+                                disabled=not (target_field_schema and filter_operator and filter_value_ok),
                                 use_container_width=False,
                                 type='primary'
                         ):
@@ -144,7 +151,7 @@ def playground():
                             if bot_filters:
                                 delete_filters = []
                                 for bot_filter in bot_filters:
-                                    selected = st.checkbox(f'{bot_filter.field.readable_name}   {bot_filter.operator}   {bot_filter.value}')
+                                    selected = st.checkbox(f'{bot_filter.field.readable_name} {bot_filter.operator} {bot_filter.value}')
                                     if selected:
                                         delete_filters.append(bot_filter)
                                 if st.button(label='Delete', key='delete_field_synonym'):

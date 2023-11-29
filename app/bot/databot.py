@@ -81,3 +81,9 @@ class DataBot:
         self.bot.set_property(WEBSOCKET_PORT, self.project.properties[WEBSOCKET_PORT.name])
         self.bot.set_property(NLP_LANGUAGE, self.project.properties[NLP_LANGUAGE.name])
 
+    def get_df(self, session: Session):
+        df = self.project.df.copy(deep=True)
+        bot_filters: list[Filter] = session.get(FILTERS)
+        for bot_filter in bot_filters:
+            df = bot_filter.apply(df)
+        return df

@@ -14,6 +14,7 @@ class RowCount(AbstractQueryWorkflow):
 
     def answer(self, session: Session) -> None:
         predicted_intent: IntentClassifierPrediction = session.get('predicted_intent')
+        df = self.databot.get_df(session)
         row_name = predicted_intent.get_parameter(session_keys.ROW_NAME).value
-        row_count = len(self.databot.project.df)
+        row_count = len(df)
         self.platform.reply(session, self.databot.messages['show_row_count'].format(row_count, row_name))
