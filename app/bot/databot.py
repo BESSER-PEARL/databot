@@ -17,6 +17,7 @@ from app.bot.workflows.queries.bar_chart import BarChart
 from app.bot.workflows.queries.histogram_chart import HistogramChart
 from app.bot.workflows.queries.line_chart import LineChart
 from app.bot.workflows.queries.row_count import RowCount
+from schema.filter import Filter
 from ui.utils.session_state_keys import SESSION_ID
 
 if TYPE_CHECKING:
