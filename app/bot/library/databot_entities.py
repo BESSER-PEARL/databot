@@ -3,6 +3,8 @@ from typing import TYPE_CHECKING
 
 from besser.bot.core.entity.entity import Entity
 
+from schema.field_type import DATETIME, NUMERIC, TEXTUAL
+
 if TYPE_CHECKING:
     from app.bot.databot import DataBot
 
@@ -10,7 +12,7 @@ if TYPE_CHECKING:
 def generate_field_entity(databot: 'DataBot', t: str or None = None) -> Entity:
     entries = {}
     for field_schema in databot.project.data_schema.field_schemas:
-        if not t or field_schema.type == t:
+        if not t or field_schema.type.t == t:
             entries[field_schema.original_name] = field_schema.synonyms['en'].copy()
             if field_schema.readable_name and field_schema.readable_name != field_schema.original_name:
                 entries[field_schema.original_name] += [field_schema.readable_name]
@@ -62,9 +64,10 @@ class DataBotEntities:
     """All the entities used by the DataBot"""
 
     def __init__(self, databot: 'DataBot'):
-        self.numeric_field = databot.bot.add_entity(generate_field_entity(databot, 'numeric'))
-        self.textual_field = databot.bot.add_entity(generate_field_entity(databot, 'textual'))
-        self.datetime_field = databot.bot.add_entity(generate_field_entity(databot, 'datetime'))
+        self.numeric_field = databot.bot.add_entity(generate_field_entity(databot, NUMERIC))
+        self.textual_field = databot.bot.add_entity(generate_field_entity(databot, TEXTUAL))
+        self.datetime_field = databot.bot.add_entity(generate_field_entity(databot, DATETIME))
+        # TODO: BOOLEAN field
         self.field = databot.bot.add_entity(generate_field_entity(databot))
         self.numeric_operator = databot.bot.add_entity(generate_operator_entity('numeric_operator'))
         self.textual_operator = databot.bot.add_entity(generate_operator_entity('textual_operator'))
