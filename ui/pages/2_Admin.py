@@ -4,9 +4,11 @@ import chardet
 import pandas as pd
 import requests
 import streamlit as st
+import streamlit_antd_components as sac
 
 from app.app import get_app
 from app.project import Project
+from schema.field_type import BOOLEAN, DATETIME, NUMERIC, TEXTUAL
 from ui.utils.session_state_keys import ALL_PROJECTS_BUTTON, CKAN, COUNT_CSVS, COUNT_DATASETS, EDITED_PACKAGES_DF, \
     IMPORT, IMPORT_OPEN_DATA_PORTAL, METADATA, NEW_PROJECT_BUTTON, NLP_STT_HF_MODEL, OPENAI_API_KEY, \
     OPEN_DATA_SOURCES, SELECTED_PROJECT, SELECT_ALL_CHECKBOXES, TITLE, UDATA, UPLOAD_DATA
@@ -381,16 +383,18 @@ def project_customization_container():
              'You should review the automatically generated data schema and complete it if you find it '
              'necessary',
         icon='💡')
-    col1, col2, col3 = st.columns([0.2, 0.4, 0.4])
-    with col1:
-        with st.expander('Select a field', expanded=True):
-            selected_field = st.radio(
-                label='selected_field',
-                options=[field.original_name for field in project.data_schema.field_schemas],
-                label_visibility='collapsed'
-            )
+    icons_map = {
+        NUMERIC: '123',
+        TEXTUAL: 'alphabet',
+        DATETIME: 'calendar2-date',
+        BOOLEAN: 'file-binary'
+    }
+    selected_field = sac.tabs(
+        [sac.TabsItem(label=field.original_name, icon=icons_map[field.type.t]) for field in project.data_schema.field_schemas],
+        align='start', return_index=False, grow=True)
+    col1, col2 = st.columns([0.4, 0.4])
     field = project.data_schema.get_field(selected_field)
-    with col2:
+    with col1:
         # READABLE NAME
         field.readable_name = st.text_input(
             label='Readable name',
@@ -450,7 +454,7 @@ def project_customization_container():
             options=['money', 'birthdate', 'city', 'salary', 'gender'],
         )
 
-    with col3:
+    with col2:
         st.text('Field categories')
         selected_category = st.selectbox(
             label='Select a category',

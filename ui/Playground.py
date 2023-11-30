@@ -61,7 +61,7 @@ def playground():
                 sac.TabsItem(label='Data', icon='database-fill'),
                 sac.TabsItem(label='Plots', icon='bar-chart-fill'),
                 sac.TabsItem(label='Filters', icon='funnel-fill'),
-            ], format_func='title', align='center', key='selected_dashboard_tab', return_index=True)
+            ], format_func='title', align='center', return_index=True, grow=True)
             if selected_tab == 0:  # Data
                 if not st.session_state[PROJECTS][project.name][TABLES]:
                     st.write(project.df)
