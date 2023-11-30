@@ -1,7 +1,9 @@
 from typing import TYPE_CHECKING
 
+import pandas as pd
+
 from schema.category import Category
-from schema.field_type import FieldType, NUMERIC, TEXTUAL
+from schema.field_type import BOOLEAN, DATETIME, FieldType, NUMERIC, TEXTUAL
 
 if TYPE_CHECKING:
     from schema.data_schema import DataSchema
@@ -15,10 +17,16 @@ class FieldSchema:
         self.readable_name: str = name
         self.synonyms: dict[str, list[str]] = {'en': []}
         t = self.data_schema.project.df[self.original_name].dtype
-        if t == 'object':
-            t = TEXTUAL
         if t == 'int64' or t == 'float64':
             t = NUMERIC
+        elif t == 'bool':
+            t = BOOLEAN
+        elif t == 'object':
+            # Check if it is datetime
+            if self.infer_datetime_type(self.original_name):
+                t = DATETIME
+            else:
+                t = TEXTUAL
         self.type: FieldType = FieldType(t)  # TODO: infer type (datetime, etc)
         self.num_different_values: int = self.data_schema.project.df[self.original_name].nunique()
         self.key: bool = False
@@ -66,3 +74,18 @@ class FieldSchema:
         else:
             field_schema_dict['categories'] = []
         return field_schema_dict
+
+    def infer_datetime_type(self, column_name):
+        df = self.data_schema.project.df
+        date_formats = [
+            '%m/%d/%Y',
+            '%d/%m/%Y',
+            '%Y/%d/%m',
+        ]
+        for date_format in date_formats:
+            try:
+                df[column_name] = pd.to_datetime(df[column_name], format=date_format)
+                return True
+            except ValueError as e:
+                pass
+        return False
