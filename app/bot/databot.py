@@ -13,10 +13,14 @@ from app.bot.library.databot_intents import DataBotIntents
 from app.bot.library.session_keys import FILTERS
 from app.bot.workflows.check_parameters import CheckParameters
 from app.bot.workflows.llm_query import LLMQuery
+from app.bot.workflows.queries.area_chart import AreaChart
 from app.bot.workflows.queries.bar_chart import BarChart
+from app.bot.workflows.queries.boxplot_chart import BoxplotChart
 from app.bot.workflows.queries.histogram_chart import HistogramChart
 from app.bot.workflows.queries.line_chart import LineChart
+from app.bot.workflows.queries.pie_chart import PieChart
 from app.bot.workflows.queries.row_count import RowCount
+from app.bot.workflows.queries.scatter_chart import ScatterChart
 from schema.filter import Filter
 from ui.utils.session_state_keys import SESSION_ID
 
@@ -41,10 +45,18 @@ class DataBot:
         self.initial = self.bot.new_state('initial', initial=True)
         self.s0 = self.bot.new_state('s0')
         self.llm_query_workflow = LLMQuery(self)
+
         self.row_count_workflow = RowCount(self)
+
+        # Plots/Charts
         self.histogram_chart_workflow = HistogramChart(self)
         self.line_chart_workflow = LineChart(self)
         self.bar_chart_workflow = BarChart(self)
+        self.pie_chart_workflow = PieChart(self)
+        self.scatter_chart_workflow = ScatterChart(self)
+        self.area_chart_workflow = AreaChart(self)
+        self.boxplot_chart_workflow = BoxplotChart(self)
+
         self.check_parameters_workflow = CheckParameters(self)
 
         def initial_body(session: Session):
@@ -76,6 +88,10 @@ class DataBot:
         self.s0.when_intent_matched_go_to(self.intents.histogram_chart, self.check_parameters_workflow.check_parameters)
         self.s0.when_intent_matched_go_to(self.intents.line_chart, self.check_parameters_workflow.check_parameters)
         self.s0.when_intent_matched_go_to(self.intents.bar_chart, self.check_parameters_workflow.check_parameters)
+        self.s0.when_intent_matched_go_to(self.intents.pie_chart, self.check_parameters_workflow.check_parameters)
+        self.s0.when_intent_matched_go_to(self.intents.scatter_chart, self.check_parameters_workflow.check_parameters)
+        self.s0.when_intent_matched_go_to(self.intents.area_chart, self.check_parameters_workflow.check_parameters)
+        self.s0.when_intent_matched_go_to(self.intents.boxplot_chart, self.check_parameters_workflow.check_parameters)
         self.s0.when_no_intent_matched_go_to(self.llm_query_workflow.llm_query)
 
     def _set_bot_properties(self):

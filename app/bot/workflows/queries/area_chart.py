@@ -6,7 +6,7 @@ from app.bot.library import session_keys
 from app.bot.workflows.abstract_query_workflow import AbstractQueryWorkflow
 
 
-class LineChart(AbstractQueryWorkflow):
+class AreaChart(AbstractQueryWorkflow):
 
     def check_params_ok(self, session: Session) -> bool:
         predicted_intent: IntentClassifierPrediction = session.get('predicted_intent')
@@ -19,6 +19,6 @@ class LineChart(AbstractQueryWorkflow):
         df = self.databot.get_df(session)
         field_x = predicted_intent.get_parameter(session_keys.FIELD_X).value
         field_y = predicted_intent.get_parameter(session_keys.FIELD_Y).value
-        fig = px.line(df, x=field_x, y=field_y, title=f'Line chart of {field_x} over {field_y}')
-        self.platform.reply(session, f'Sure! This is the line chart of {field_x} over {field_y}')
+        fig = px.area(df, x=field_x, y=field_y, title=f'Area chart of {field_x} over {field_y}')
+        self.platform.reply(session, f'Sure! This is the area chart of {field_x} over {field_y}')
         self.platform.reply_plotly(session, fig)

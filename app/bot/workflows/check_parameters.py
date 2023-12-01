@@ -41,7 +41,10 @@ class CheckParameters:
         self.check_parameters.when_event_go_to(check_intent, self.databot.s0, event_params={'intent': self.databot.intents.numeric_field_between_values})
         self.check_parameters.when_event_go_to(check_intent, self.databot.s0, event_params={'intent': self.databot.intents.datetime_field_between_values})
 
-
         self.check_parameters.when_event_go_to(check_intent, self.databot.histogram_chart_workflow.main_state, event_params={'intent': self.databot.intents.histogram_chart})
         self.check_parameters.when_event_go_to(check_intent, self.databot.line_chart_workflow.main_state, event_params={'intent': self.databot.intents.line_chart})
         self.check_parameters.when_event_go_to(check_intent, self.databot.bar_chart_workflow.main_state, event_params={'intent': self.databot.intents.bar_chart})
+        self.check_parameters.when_event_go_to(check_intent, self.databot.pie_chart_workflow.main_state, event_params={'intent': self.databot.intents.pie_chart})
+        self.check_parameters.when_event_go_to(check_intent, self.databot.scatter_chart_workflow.main_state, event_params={'intent': self.databot.intents.scatter_chart})
+        self.check_parameters.when_event_go_to(check_intent, self.databot.area_chart_workflow.main_state, event_params={'intent': self.databot.intents.area_chart})
+        self.check_parameters.when_event_go_to(check_intent, self.databot.boxplot_chart_workflow.main_state, event_params={'intent': self.databot.intents.boxplot_chart})

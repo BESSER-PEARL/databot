@@ -48,8 +48,6 @@ def playground():
     with dash_col:
         # TODO: SPECIFIC METHOD FOR DASHBOARD, LIKE bot_container()
         if project:
-            # tab_data, tab_plot, tab_filters = st.tabs(['Data', 'Plot', 'Filters'])
-
             selected_tab = sac.tabs([
                 sac.TabsItem(label='Data', icon='database-fill'),
                 sac.TabsItem(label='Plots', icon='bar-chart-fill'),

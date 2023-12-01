@@ -35,6 +35,20 @@ class DataBotIntents:
         self.bar_chart.parameter(session_keys.FIELD_X, 'FIELD_X', databot.entities.field)
         self.bar_chart.parameter(session_keys.FIELD_Y, 'FIELD_Y', databot.entities.field)
 
+        self.pie_chart = databot.bot.add_intent(load_intent('pie_chart'))
+        self.pie_chart.parameter(session_keys.FIELD_X, 'FIELD_X', databot.entities.field)  # TODO: Only numeric fields
+        self.pie_chart.parameter(session_keys.FIELD_Y, 'FIELD_Y', databot.entities.field)
+
+        self.scatter_chart = databot.bot.add_intent(load_intent('scatter_chart'))
+        self.scatter_chart.parameter(session_keys.FIELD_X, 'FIELD_X', databot.entities.numeric_field)
+        self.scatter_chart.parameter(session_keys.FIELD_Y, 'FIELD_Y', databot.entities.numeric_field)
+
+        self.area_chart = databot.bot.add_intent(load_intent('area_chart'))
+        self.area_chart.parameter(session_keys.FIELD_X, 'FIELD_X', databot.entities.field)
+        self.area_chart.parameter(session_keys.FIELD_Y, 'FIELD_Y', databot.entities.field)
+
+        self.boxplot_chart = databot.bot.add_intent(load_intent('boxplot_chart'))
+        self.boxplot_chart.parameter(session_keys.FIELD, 'FIELD', databot.entities.numeric_field)
 
         self.reset = databot.bot.add_intent(load_intent('reset'))
 

@@ -6,19 +6,17 @@ from app.bot.library import session_keys
 from app.bot.workflows.abstract_query_workflow import AbstractQueryWorkflow
 
 
-class LineChart(AbstractQueryWorkflow):
+class BoxplotChart(AbstractQueryWorkflow):
 
     def check_params_ok(self, session: Session) -> bool:
         predicted_intent: IntentClassifierPrediction = session.get('predicted_intent')
-        field_x = predicted_intent.get_parameter(session_keys.FIELD_X).value
-        field_y = predicted_intent.get_parameter(session_keys.FIELD_Y).value
-        return field_x and field_y
+        field = predicted_intent.get_parameter(session_keys.FIELD).value
+        return field
 
     def answer(self, session: Session) -> None:
         predicted_intent: IntentClassifierPrediction = session.get('predicted_intent')
         df = self.databot.get_df(session)
-        field_x = predicted_intent.get_parameter(session_keys.FIELD_X).value
-        field_y = predicted_intent.get_parameter(session_keys.FIELD_Y).value
-        fig = px.line(df, x=field_x, y=field_y, title=f'Line chart of {field_x} over {field_y}')
-        self.platform.reply(session, f'Sure! This is the line chart of {field_x} over {field_y}')
+        field = predicted_intent.get_parameter(session_keys.FIELD).value
+        fig = px.box(df, y=field, title=f'Boxplot of {field}')
+        self.platform.reply(session, f'Sure! This is the boxplot of {field}')
         self.platform.reply_plotly(session, fig)

@@ -3,10 +3,23 @@
     "Histogram of FIELD"
   ],
   "line_chart": [
-    "Line chart of FIELD_x over FIELD_Y"
+    "Line chart of FIELD_X over FIELD_Y"
   ],
   "bar_chart": [
-    "Bar chart of FIELD_x grouped by FIELD_Y"
+    "Bar chart of FIELD_X grouped by FIELD_Y"
+  ],
+  "pie_chart": [
+    "Pie chart of FIELD_X grouped by FIELD_Y"
+  ],
+  "scatter_chart": [
+    "Scatter chart of FIELD_X over FIELD_Y",
+    "Scatter plot of FIELD_X against FIELD_Y"
+  ],
+  "area_chart": [
+    "Area chart of FIELD_X over FIELD_Y"
+  ],
+  "boxplot_chart": [
+    "Boxplot of FIELD"
   ],
 
   "reset": [
