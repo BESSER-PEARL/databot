@@ -1,7 +1,17 @@
 import streamlit as st
+import streamlit_antd_components as sac
 
 from app.app import get_app
 from ui.utils.session_state_keys import SELECTED_PROJECT
+
+
+def sidebar_menu():
+    page = sac.menu([
+        sac.MenuItem('Playground', icon='robot'),
+        sac.MenuItem('Admin', icon='person-fill'),
+        sac.MenuItem('Settings', icon='gear-fill'),
+    ], open_all=True)
+    return page
 
 
 def project_selection():

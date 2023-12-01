@@ -20,6 +20,7 @@ class FieldSchema:
         if t == 'int64' or t == 'float64':
             t = NUMERIC
         elif t == 'bool':
+            # TODO: YES/NO, 0/1 columns, boolean?
             t = BOOLEAN
         elif t == 'object':
             # Check if it is datetime
@@ -77,6 +78,7 @@ class FieldSchema:
 
     def infer_datetime_type(self, column_name):
         df = self.data_schema.project.df
+        # TODO: datetime formats
         date_formats = [
             '%m/%d/%Y',
             '%d/%m/%Y',

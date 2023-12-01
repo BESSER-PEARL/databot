@@ -13,9 +13,7 @@ from ui.utils.session_state_keys import ALL_PROJECTS_BUTTON, CKAN, COUNT_CSVS, C
     IMPORT, IMPORT_OPEN_DATA_PORTAL, METADATA, NEW_PROJECT_BUTTON, NLP_STT_HF_MODEL, OPENAI_API_KEY, \
     OPEN_DATA_SOURCES, SELECTED_PROJECT, SELECT_ALL_CHECKBOXES, TITLE, UDATA, UPLOAD_DATA
 from ui.sidebar import project_selection
-from ui.utils.utils import clear_box, disable_input_focusout, get_input_value
-
-st.set_page_config(layout="wide")
+from ui.utils.utils import clear_box, get_input_value
 
 
 def admin():
@@ -488,8 +486,3 @@ def project_customization_container():
                     st.rerun()
             else:
                 st.error('There are no synonyms')
-
-
-# Run it to display the Admin page
-admin()
-disable_input_focusout()

@@ -2,7 +2,7 @@
 TEXTUAL = 'textual'
 NUMERIC = 'numeric'
 DATETIME = 'datetime'
-BOOLEAN = 'datetime'
+BOOLEAN = 'boolean'
 
 
 class FieldType:

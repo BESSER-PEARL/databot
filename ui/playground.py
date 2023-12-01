@@ -1,23 +1,16 @@
 import queue
-import sys
 import streamlit as st
 import streamlit_antd_components as sac
-
-from streamlit.runtime import Runtime
-from streamlit.web import cli as stcli
 
 from app.bot.library.session_keys import FILTERS
 from schema.field_type import BOOLEAN, DATETIME, NUMERIC, TEXTUAL
 from schema.filter import Filter, boolean_operators, datetime_operators, numeric_operators, textual_operators
 from ui.bot_container import bot_container
-from app.app import create_app, get_app
-from ui.session_monitoring import run_thread_session_monitoring
+from app.app import get_app
 from ui.utils.session_state_keys import HISTORY, PLOTS, PLOT_INDEX, PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, \
     TABLES, TABLE_INDEX
 from ui.sidebar import project_selection
-from ui.utils.utils import disable_input_focusout
-
-st.set_page_config(layout="wide")
+from ui.utils.utils import get_page_height
 
 BOT_CONTAINER_WIDTH = 0.3
 
@@ -50,7 +43,7 @@ def playground():
     bot_col, dash_col = st.columns([BOT_CONTAINER_WIDTH, 1 - BOT_CONTAINER_WIDTH])
 
     with bot_col:
-        st.subheader(f"🤖 {project.name}")
+        st.subheader(f"🤖 DataBot")
         bot_container()
     with dash_col:
         # TODO: SPECIFIC METHOD FOR DASHBOARD, LIKE bot_container()
@@ -64,14 +57,13 @@ def playground():
             ], format_func='title', align='center', return_index=True, grow=True)
             if selected_tab == 0:  # Data
                 if not st.session_state[PROJECTS][project.name][TABLES]:
-                    st.write(project.df)
+                    st.dataframe(project.df, height=get_page_height(235), use_container_width=True)
                 else:
                     # st.write(st.session_state[PROJECTS][project.name][TABLES][TABLE_INDEX])
                     table_container = st.container()
                     navigate_dashboard_elements(TABLES, TABLE_INDEX)
                     table_index = st.session_state[PROJECTS][project.name][TABLE_INDEX]
-                    table_container.dataframe(st.session_state[PROJECTS][project.name][TABLES][table_index], use_container_width=True)
-
+                    table_container.dataframe(st.session_state[PROJECTS][project.name][TABLES][table_index], height=get_page_height(235), use_container_width=True)
             elif selected_tab == 1:  # Plots
                 if not st.session_state[PROJECTS][project.name][PLOTS]:
                     st.info(
@@ -219,17 +211,3 @@ def navigate_dashboard_elements(elements_label, index_label):
         if previous_index >= len(st.session_state[PROJECTS][project.name][elements_label]):
             st.session_state[PROJECTS][project.name][index_label] -= 1
         st.rerun()
-
-
-if __name__ == "__main__":
-    if st.runtime.exists():
-        # Create the app, only 1 time, shared across sessions
-        create_app()
-        # Run session monitoring in another thread, only 1 time
-        run_thread_session_monitoring()
-        # Run the Playground UI
-        playground()
-        disable_input_focusout()
-    else:
-        sys.argv = ["streamlit", "run", sys.argv[0]]
-        sys.exit(stcli.main())

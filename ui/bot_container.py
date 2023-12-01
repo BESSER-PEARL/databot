@@ -7,18 +7,19 @@ from audio_recorder_streamlit import audio_recorder
 from besser.bot.platforms.websocket.message import Message
 from plotly import io
 
+from streamlit.components.v1 import html
 from streamlit_chat import NO_AVATAR, message
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 from besser.bot.platforms.payload import Payload, PayloadAction, PayloadEncoder
 
 from app.app import get_app
-from ui.session_monitoring import get_streamlit_session
+from ui.utils.session_monitoring import get_streamlit_session
 from ui.utils.session_state_keys import AUDIO, DATAFRAME, HISTORY, LAST_VOICE_MESSAGE, PLOTS, PLOTLY, PLOT_INDEX, \
     PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, STR, TABLES, TABLE_INDEX, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, \
     WEBSOCKET_THREAD
 from ui.utils.tweaker import st_tweaker
-from streamlit.components.v1 import html
+from ui.utils.utils import get_page_height
 
 m_count = 0
 """int: Message counter to assign a unique key to each message."""
@@ -109,14 +110,13 @@ def bot_container():
         except Exception as e:
             st.write('No connection established')
 
-    chat_box_css = """
-        #chat_box {
+    chat_box_css = f"""
+        #chat_box {{
             box-shadow: rgb(0 0 0 / 20%) 0px 2px 1px -1px, rgb(0 0 0 / 14%) 0px 1px 1px 0px, rgb(0 0 0 / 12%) 0px 1px 3px 0px;
             border-radius: 15px;
-            color: red;
+            height: {get_page_height(220)}px;
             overflow: scroll;
-            height: 400px;
-        }
+        }}
     """
     chat_box = st_tweaker.columns([1], id='chat_box', css=chat_box_css)
     with chat_box[0]:

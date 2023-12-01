@@ -32,7 +32,7 @@ class DataBot:
         self.field_value_map: dict[str, str] = {}
         self.entities: DataBotEntities = DataBotEntities(self)
         self.intents: DataBotIntents = DataBotIntents(self)
-        with open('../app/bot/library/messages.json', 'r', encoding='utf-8') as file:
+        with open('app/bot/library/messages.json', 'r', encoding='utf-8') as file:
             self.messages: dict[str, str] = json.load(file)
         logging.basicConfig(level=logging.INFO, format='{levelname} - {asctime}: {message}', style='{')
         self._set_bot_properties()
