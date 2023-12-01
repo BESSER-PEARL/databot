@@ -54,6 +54,7 @@ def playground():
                 sac.TabsItem(label='Data', icon='database-fill'),
                 sac.TabsItem(label='Plots', icon='bar-chart-fill'),
                 sac.TabsItem(label='Filters', icon='funnel-fill'),
+                sac.TabsItem(label='Settings', icon='gear-fill'),
             ], format_func='title', align='center', return_index=True, grow=True)
             if selected_tab == 0:  # Data
                 if not st.session_state[PROJECTS][project.name][TABLES]:
@@ -167,6 +168,17 @@ def playground():
                                     st.rerun()
                             else:
                                 st.error('There are no filters')
+            elif selected_tab == 3:  # Project settings
+                def reset_chat():
+                    session_id = st.session_state[PROJECTS][project.name][SESSION_ID]
+                    project.databot.bot.get_session(session_id).set(FILTERS, [])
+                    st.session_state[PROJECTS][project.name][HISTORY] = []
+                    st.session_state[PROJECTS][project.name][PLOTS] = []
+                    st.session_state[PROJECTS][project.name][PLOT_INDEX] = None
+                    st.session_state[PROJECTS][project.name][TABLES] = []
+                    st.session_state[PROJECTS][project.name][TABLE_INDEX] = None
+                    project.databot.bot.reset(session_id)
+                st.button(label='Reset chat', on_click=reset_chat)
 
         else:
             st.info(
