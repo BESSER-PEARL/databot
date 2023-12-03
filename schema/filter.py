@@ -1,6 +1,7 @@
 import logging
 from typing import Any
 
+import numpy as np
 from pandas import DataFrame
 
 from schema.field_schema import FieldSchema
@@ -66,7 +67,22 @@ class Filter:
         return df
 
     def apply_datetime_filter(self, df: DataFrame):
-        # TODO: IMPLEMENT
+        # datetime value: [(date, time)]
+        # date or time can be None
+        # if operator is 'between': [(date1, time1), (date2, time2)]
+        # date1 and date2, or time1 and time2, can be null
+        # TODO: Use the time field for the datetime filter
+        if self.operator == 'equals':
+            return df[df[self.field.original_name] == np.datetime64(self.value[0][0])]
+        if self.operator == 'different':
+            return df[df[self.field.original_name] != np.datetime64(self.value[0][0])]
+        if self.operator == 'between':
+            return df[(np.datetime64(self.value[0][0]) <= df[self.field.original_name]) & (df[self.field.original_name] <= np.datetime64(self.value[1][0]))]
+        if self.operator == 'before':
+            return df[df[self.field.original_name] < np.datetime64(self.value[0][0])]
+        if self.operator == 'after':
+            return df[df[self.field.original_name] > np.datetime64(self.value[0][0])]
+        logging.warning('No datetime filter could be applied')
         return df
 
     def apply_boolean_filter(self, df: DataFrame):

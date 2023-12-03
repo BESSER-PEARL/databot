@@ -127,7 +127,7 @@ def playground():
                                         filter_value = [(date_interval[0], time0), (date_interval[1], time1)]
                                     else:
                                         filter_value = [(None, time0), (None, time1)]
-                                    if (len(date_interval) == 1) or (time0 and not time1) or (not time0 and time1) or time0 > time1:
+                                    if (len(date_interval) == 1) or (time0 and not time1) or (not time0 and time1) or (time0 and time1 and time0 > time1):
                                         st.error('Set a proper date interval, time interval or both')
                                         filter_value_ok = False
                                 else:
