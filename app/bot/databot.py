@@ -2,6 +2,7 @@ import json
 import logging
 from typing import TYPE_CHECKING
 
+import pandas as pd
 from besser.bot.core.bot import Bot
 from besser.bot.core.session import Session
 from besser.bot.nlp import NLP_LANGUAGE
@@ -115,6 +116,10 @@ class DataBot:
             session (Session): the user session
             df (pandas.DataFrame): the message to send to the user
         """
+        pd.set_option('mode.chained_assignment', None)
+        for col in df.columns:
+            if pd.api.types.is_datetime64_any_dtype(df[col]):
+                df[col] = df[col].astype(str)
         message = df.to_dict()
         message[BOT_DF_TITLE] = title
         message = json.dumps(message)
@@ -122,3 +127,4 @@ class DataBot:
         payload = Payload(action=PayloadAction.BOT_REPLY_DF,
                           message=message)
         self.platform._send(session.id, payload)
+        pd.set_option('mode.chained_assignment', 'warn')

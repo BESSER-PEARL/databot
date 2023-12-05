@@ -35,8 +35,8 @@ def playground():
             QUEUE: queue.Queue(),
             PLOTS: [],
             PLOT_INDEX: None,
-            TABLES: [],
-            TABLE_INDEX: None
+            TABLES: [(f'{project.name}: original data', project.df)],
+            TABLE_INDEX: 0
         }
 
     st.markdown("<h1 style='text-align: center;'>BESSER Conversational Data Analysis</h1>", unsafe_allow_html=True)
@@ -55,16 +55,11 @@ def playground():
                 sac.TabsItem(label='Settings', icon='gear-fill'),
             ], format_func='title', align='center', return_index=True, grow=True)
             if selected_tab == 0:  # Data
-                if not st.session_state[PROJECTS][project.name][TABLES]:
-                    st.write(f'**{project.name}: original data**')  # Dataframe title
-                    st.dataframe(project.df, height=get_page_height(275), use_container_width=True)
-                else:
-                    # st.write(st.session_state[PROJECTS][project.name][TABLES][TABLE_INDEX])
-                    table_container = st.container()
-                    navigate_dashboard_elements(TABLES, TABLE_INDEX)
-                    table_index = st.session_state[PROJECTS][project.name][TABLE_INDEX]
-                    table_container.write(f'**{st.session_state[PROJECTS][project.name][TABLES][table_index][0]}**')  # Dataframe title
-                    table_container.dataframe(st.session_state[PROJECTS][project.name][TABLES][table_index][1], height=get_page_height(275), use_container_width=True)
+                table_container = st.container()
+                select_dashboard_element(table_container, TABLES, TABLE_INDEX)
+                navigate_dashboard_elements(TABLES, TABLE_INDEX)
+                table_index = st.session_state[PROJECTS][project.name][TABLE_INDEX]
+                table_container.dataframe(st.session_state[PROJECTS][project.name][TABLES][table_index][1], height=get_page_height(295), use_container_width=True)
             elif selected_tab == 1:  # Plots
                 if not st.session_state[PROJECTS][project.name][PLOTS]:
                     st.info(
@@ -73,9 +68,12 @@ def playground():
                     )
                 else:
                     plot_container = st.container()
+                    select_dashboard_element(plot_container, PLOTS, PLOT_INDEX)
                     navigate_dashboard_elements(PLOTS, PLOT_INDEX)
                     plot_index = st.session_state[PROJECTS][project.name][PLOT_INDEX]
-                    plot_container.plotly_chart(st.session_state[PROJECTS][project.name][PLOTS][plot_index], use_container_width=True)
+                    plot = st.session_state[PROJECTS][project.name][PLOTS][plot_index][1]
+                    plot.update_layout(height=get_page_height(295))
+                    plot_container.plotly_chart(plot, use_container_width=True)
             elif selected_tab == 2:  # Filters
                 if not project.bot_running:
                     st.info(
@@ -196,7 +194,7 @@ def navigate_dashboard_elements(elements_label, index_label):
         sac.ButtonsItem(label=f'{st.session_state[PROJECTS][project.name][index_label] + 1} / {len(st.session_state[PROJECTS][project.name][elements_label])}'),
         sac.ButtonsItem(icon='caret-right-fill'),
         sac.ButtonsItem(icon='chevron-bar-right'),
-        sac.ButtonsItem(label='Delete this element'),
+        sac.ButtonsItem(label='Delete this element', disabled=(elements_label==TABLES and st.session_state[PROJECTS][project.name][index_label]==0)),
     ], align='center', shape='circle', index=None, type='text', return_index=True)
 
     if selected_button == 0:  # Move to the top left
@@ -223,3 +221,23 @@ def navigate_dashboard_elements(elements_label, index_label):
         if previous_index >= len(st.session_state[PROJECTS][project.name][elements_label]):
             st.session_state[PROJECTS][project.name][index_label] -= 1
         st.rerun()
+
+
+def select_dashboard_element(container, elements_label, index_label):
+    project = st.session_state[SELECTED_PROJECT]
+    index = st.session_state[PROJECTS][project.name][index_label]
+
+    def update_index():
+        selected_element = st.session_state['select_dashboard_element']
+        for i, element in enumerate(st.session_state[PROJECTS][project.name][elements_label]):
+            if element[0] == selected_element:
+                st.session_state[PROJECTS][project.name][index_label] = i
+
+    container.selectbox(
+        label='Select a table',
+        options=[element[0] for element in st.session_state[PROJECTS][project.name][elements_label]],
+        label_visibility='collapsed',
+        index=index,
+        on_change=update_index,
+        key='select_dashboard_element'
+    )

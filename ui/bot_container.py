@@ -65,8 +65,10 @@ def websocket_connection():
             streamlit_session._session_state[PROJECTS][project.name][TABLE_INDEX] = len(streamlit_session._session_state[PROJECTS][project.name][TABLES]) - 1
         elif payload.action == PayloadAction.BOT_REPLY_PLOTLY.value:
             content = io.from_json(payload.message)
+            title = content.layout.title.text
+            content.update_layout(title='')
             t = PLOTLY
-            streamlit_session._session_state[PROJECTS][project.name][PLOTS].append(content)
+            streamlit_session._session_state[PROJECTS][project.name][PLOTS].append((title, content))
             streamlit_session._session_state[PROJECTS][project.name][PLOT_INDEX] = len(streamlit_session._session_state[PROJECTS][project.name][PLOTS]) - 1
         message = Message(t, content, is_user=False)
         streamlit_session._session_state[PROJECTS][project.name][QUEUE].put(message)
