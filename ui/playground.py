@@ -56,13 +56,15 @@ def playground():
             ], format_func='title', align='center', return_index=True, grow=True)
             if selected_tab == 0:  # Data
                 if not st.session_state[PROJECTS][project.name][TABLES]:
-                    st.dataframe(project.df, height=get_page_height(235), use_container_width=True)
+                    st.write(f'**{project.name}: original data**')  # Dataframe title
+                    st.dataframe(project.df, height=get_page_height(275), use_container_width=True)
                 else:
                     # st.write(st.session_state[PROJECTS][project.name][TABLES][TABLE_INDEX])
                     table_container = st.container()
                     navigate_dashboard_elements(TABLES, TABLE_INDEX)
                     table_index = st.session_state[PROJECTS][project.name][TABLE_INDEX]
-                    table_container.dataframe(st.session_state[PROJECTS][project.name][TABLES][table_index], height=get_page_height(235), use_container_width=True)
+                    table_container.write(f'**{st.session_state[PROJECTS][project.name][TABLES][table_index][0]}**')  # Dataframe title
+                    table_container.dataframe(st.session_state[PROJECTS][project.name][TABLES][table_index][1], height=get_page_height(275), use_container_width=True)
             elif selected_tab == 1:  # Plots
                 if not st.session_state[PROJECTS][project.name][PLOTS]:
                     st.info(

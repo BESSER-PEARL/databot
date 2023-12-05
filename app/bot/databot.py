@@ -5,8 +5,10 @@ from typing import TYPE_CHECKING
 from besser.bot.core.bot import Bot
 from besser.bot.core.session import Session
 from besser.bot.nlp import NLP_LANGUAGE
+from besser.bot.platforms.payload import Payload, PayloadAction
 from besser.bot.platforms.websocket import WEBSOCKET_PORT
 from besser.bot.platforms.websocket.websocket_platform import WebSocketPlatform
+from pandas import DataFrame
 
 from app.bot.library.databot_entities import DataBotEntities
 from app.bot.library.databot_intents import DataBotIntents
@@ -22,7 +24,7 @@ from app.bot.workflows.queries.pie_chart import PieChart
 from app.bot.workflows.queries.row_count import RowCount
 from app.bot.workflows.queries.scatter_chart import ScatterChart
 from schema.filter import Filter
-from ui.utils.session_state_keys import SESSION_ID
+from ui.utils.session_state_keys import BOT_DF_TITLE, SESSION_ID
 
 if TYPE_CHECKING:
     from app.project import Project
@@ -104,3 +106,19 @@ class DataBot:
         for bot_filter in bot_filters:
             df = bot_filter.apply(df)
         return df
+
+    def reply_dataframe(self, session: Session, df: DataFrame, title: str) -> None:
+        """Send a DataFrame bot reply, i.e. a table, to a specific user.
+
+        Args:
+            title (str): the DataFrame title
+            session (Session): the user session
+            df (pandas.DataFrame): the message to send to the user
+        """
+        message = df.to_dict()
+        message[BOT_DF_TITLE] = title
+        message = json.dumps(message)
+        session.chat_history.append((message, 0))
+        payload = Payload(action=PayloadAction.BOT_REPLY_DF,
+                          message=message)
+        self.platform._send(session.id, payload)

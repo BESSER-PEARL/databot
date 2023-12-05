@@ -2,6 +2,7 @@
 ALL_PROJECTS_BUTTON = 'all_projects_button'
 APP = 'app'
 AUDIO = 'audio'
+BOT_DF_TITLE = 'BOT_DF_TITLE'
 CKAN = 'CKAN'
 COUNT_CSVS = 'count_csvs'
 COUNT_DATASETS = 'count_datasets'
