@@ -173,10 +173,10 @@ def playground():
                     st.session_state[PROJECTS][project.name][HISTORY] = []
                     st.session_state[PROJECTS][project.name][PLOTS] = []
                     st.session_state[PROJECTS][project.name][PLOT_INDEX] = None
-                    st.session_state[PROJECTS][project.name][TABLES] = []
-                    st.session_state[PROJECTS][project.name][TABLE_INDEX] = None
+                    st.session_state[PROJECTS][project.name][TABLES] = [(f'{project.name}: original data', project.df)]
+                    st.session_state[PROJECTS][project.name][TABLE_INDEX] = 0
                     project.databot.bot.reset(session_id)
-                st.button(label='Reset chat', on_click=reset_chat)
+                st.button(label='🔄 Reset chat', on_click=reset_chat)
 
         else:
             st.info(
@@ -229,15 +229,16 @@ def select_dashboard_element(container, elements_label, index_label):
 
     def update_index():
         selected_element = st.session_state['select_dashboard_element']
-        for i, element in enumerate(st.session_state[PROJECTS][project.name][elements_label]):
-            if element[0] == selected_element:
+        for i in range(len(st.session_state[PROJECTS][project.name][elements_label])):
+            if i == selected_element:
                 st.session_state[PROJECTS][project.name][index_label] = i
 
     container.selectbox(
         label='Select a table',
-        options=[element[0] for element in st.session_state[PROJECTS][project.name][elements_label]],
+        options=[i for i in range(len(st.session_state[PROJECTS][project.name][elements_label]))],
         label_visibility='collapsed',
         index=index,
         on_change=update_index,
+        format_func=(lambda i: st.session_state[PROJECTS][project.name][elements_label][i][0]),
         key='select_dashboard_element'
     )
