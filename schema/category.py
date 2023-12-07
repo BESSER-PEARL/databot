@@ -5,5 +5,10 @@ class Category:
         self.synonyms: dict[str, list[str]] = {'en': []}
 
     def to_json(self):
-        return {'value': self.value,
-                'synonyms': self.synonyms}
+        if self.synonyms['en']:
+            return {
+                # 'value': self.value,
+                'synonyms': self.synonyms['en']
+            }
+        else:
+            return {}

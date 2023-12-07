@@ -61,19 +61,21 @@ class FieldSchema:
 
     def to_dict(self):
         field_schema_dict = {
-            'original_name': self.original_name,
-            'readable_name': self.readable_name,
-            'synonyms': self.synonyms,
-            'type': self.type.to_json(),
-            'num_different_values': self.num_different_values,
-            'key': self.key,
-            'categorical': self.categorical,
-            'tags': self.tags,
+            # 'original_name': self.original_name,
+            # 'readable_name': self.readable_name,
+            'type': self.type.t,
+            # 'num_different_values': self.num_different_values,
+            # 'key': self.key,
+            # 'categorical': self.categorical,
+            # 'tags': self.tags,
         }
         if self.categorical:
-            field_schema_dict['categories'] = [category.to_json() for category in self.categories]
-        else:
-            field_schema_dict['categories'] = []
+            field_schema_dict['categories'] = {category.value: category.to_json() for category in self.categories}
+        # else:
+        #     field_schema_dict['categories'] = []
+        if self.synonyms['en']:
+            field_schema_dict['synonyms'] = self.synonyms['en']
+
         return field_schema_dict
 
     def infer_datetime_type(self, column_name):

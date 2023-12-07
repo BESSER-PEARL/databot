@@ -21,7 +21,7 @@ class DataSchema:
         return None
 
     def to_dict(self):
-        return {'field_schemas': [field_schema.to_dict() for field_schema in self.field_schemas]}
+        return {field_schema.original_name: field_schema.to_dict() for field_schema in self.field_schemas}
 
     def get_key_fields(self) -> list[FieldSchema]:
         key_fields: list[FieldSchema] = []

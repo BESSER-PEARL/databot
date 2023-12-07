@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 
 from besser.bot.core.session import Session
 from openai import OpenAI
-
+from pandasql import sqldf
 
 if TYPE_CHECKING:
     from app.bot.databot import DataBot
@@ -27,7 +27,12 @@ class LLMQuery:
                 try:
                     data_schema_dict = self.databot.project.data_schema.to_dict()
                     response = self.query_openai(session.message, data_schema_dict)
-                    session.reply(str(response))
+                    if 'sql' in response:
+                        df = self.databot.get_df(session)
+                        answer = sqldf(response['sql'])
+                        self.databot.reply_dataframe(session, answer, response['title'], response['sql'])
+
+                    session.reply('✨ ' + response['answer'])
                 except Exception as e:
                     logging.error('An error occurred while calling the OpenAI API. See the attached exception:')
                     traceback.print_exc()
@@ -47,13 +52,23 @@ class LLMQuery:
                     "content": f"""
                     You are a helpful assistant, part of an intent-based chatbot created to answer questions about a 
                     dataset. Your task is to help answering questions the chatbot was not able to identify their intent.
-                    Your answer must follow the following json pattern:
-                    "answer": "your answer here"
+                    You must provide a syntactically correct SQL statement to retrieve the answer to the user question 
+                    from the data (the table is called 'df', so use 'FROM df...' in the SQL query).
+                    Remember to use column names and values that are present in the data.
+                    Do not invent the query parameters. You can guess 
+                    some of the query parameters based on the user input (e.g., if there is a 'city' column and the
+                    user asks something about 'regions', then you know you should query the 'city' column. Also take a 
                     Consider the following data schema/metadata of the chatbot's csv file if you need it in order to 
-                    provide the best answer.
+                    provide the best answer. Remember there you may find column name synonyms, categories (for 
+                    those that are categorical) or type.
+                    Your answer must be a valid json with 2 attributes: 'title' (a title for the generated answer), 
+                    'sql' (containing the SQL query) and 'answer' 
+                    (briefly explaining in natural language how the data was collected, talking in the first person, do 
+                    not mention the word SQL)
+                    If you consider that the user query is not related to the data, return "I am not an expert in that."
+                    as answer and suggest some questions the user could ask about the data.
+                    
                     {data_schema}
-                    If you consider that the query is not related to the data, answer "I am not an expert in that." and
-                    suggest some of questions the user could ask about the data.
                     """
                 },
                 {"role": "user", "content": message},

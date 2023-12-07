@@ -104,3 +104,18 @@ def remove_header():
             """,
         unsafe_allow_html=True
     )
+
+
+def toggle_button(*args, key=None, **kwargs):
+    if key is None:
+        raise ValueError("Must pass key")
+
+    if key not in st.session_state:
+        st.session_state[key] = False
+
+    if "type" not in kwargs:
+        kwargs["type"] = "primary" if st.session_state[key] else "secondary"
+
+    if st.button(*args, **kwargs):
+        st.session_state[key] = not st.session_state[key]
+        st.rerun()

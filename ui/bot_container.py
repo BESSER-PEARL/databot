@@ -15,9 +15,9 @@ from besser.bot.platforms.payload import Payload, PayloadAction, PayloadEncoder
 
 from app.app import get_app
 from ui.utils.session_monitoring import get_streamlit_session
-from ui.utils.session_state_keys import AUDIO, BOT_DF_TITLE, DATAFRAME, HISTORY, LAST_VOICE_MESSAGE, PLOTS, PLOTLY, \
-    PLOT_INDEX, PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, STR, TABLES, TABLE_INDEX, USER_INPUT, WEBSOCKET, \
-    WEBSOCKET_PORT, WEBSOCKET_THREAD
+from ui.utils.session_state_keys import AUDIO, BOT_DF_DATA, BOT_DF_SQL, BOT_DF_TITLE, DATAFRAME, HISTORY, \
+    LAST_VOICE_MESSAGE, PLOTS, PLOTLY, PLOT_INDEX, PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, STR, TABLES, \
+    TABLE_INDEX, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, WEBSOCKET_THREAD
 from ui.utils.tweaker import st_tweaker
 from ui.utils.utils import get_page_height
 
@@ -54,14 +54,12 @@ def websocket_connection():
             t = STR
         elif payload.action == PayloadAction.BOT_REPLY_DF.value:
             content = json.loads(payload.message)
-            try:
-                title = content[BOT_DF_TITLE]
-                del content[BOT_DF_TITLE]
-            except Exception as e:
-                title = None
-            content = pd.DataFrame(content)
+            title = content[BOT_DF_TITLE]
+            sql = content[BOT_DF_SQL]
+            data = content[BOT_DF_DATA]
+            content = pd.DataFrame(data)
             t = DATAFRAME
-            streamlit_session._session_state[PROJECTS][project.name][TABLES].append((title, content))
+            streamlit_session._session_state[PROJECTS][project.name][TABLES].append((title, content, sql))
             streamlit_session._session_state[PROJECTS][project.name][TABLE_INDEX] = len(streamlit_session._session_state[PROJECTS][project.name][TABLES]) - 1
         elif payload.action == PayloadAction.BOT_REPLY_PLOTLY.value:
             content = io.from_json(payload.message)

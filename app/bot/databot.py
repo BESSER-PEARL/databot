@@ -29,7 +29,7 @@ from app.bot.workflows.queries.tables.value1_vs_value2 import Value1VSValue2
 from app.bot.workflows.queries.tables.value_frequency import ValueFrequency
 from schema.field_schema import FieldSchema
 from schema.filter import Filter
-from ui.utils.session_state_keys import BOT_DF_TITLE, SESSION_ID
+from ui.utils.session_state_keys import BOT_DF_DATA, BOT_DF_SQL, BOT_DF_TITLE, SESSION_ID
 
 if TYPE_CHECKING:
     from app.project import Project
@@ -110,20 +110,20 @@ class DataBot:
             df = bot_filter.apply(df)
         return df
 
-    def reply_dataframe(self, session: Session, df: DataFrame, title: str) -> None:
+    def reply_dataframe(self, session: Session, df: DataFrame, title: str, sql: str = None) -> None:
         """Send a DataFrame bot reply, i.e. a table, to a specific user.
 
         Args:
             title (str): the DataFrame title
             session (Session): the user session
             df (pandas.DataFrame): the message to send to the user
+            sql (str): a sql statement if this df has been generated with a sql statement, or None otherwise
         """
         pd.set_option('mode.chained_assignment', None)
         for col in df.columns:
             if pd.api.types.is_datetime64_any_dtype(df[col]):
                 df[col] = df[col].astype(str)
-        message = df.to_dict()
-        message[BOT_DF_TITLE] = title
+        message = {BOT_DF_TITLE: title, BOT_DF_SQL: sql, BOT_DF_DATA: df.to_dict()}
         message = json.dumps(message)
         session.chat_history.append((message, 0))
         payload = Payload(action=PayloadAction.BOT_REPLY_DF,
