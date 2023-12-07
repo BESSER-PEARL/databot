@@ -45,7 +45,7 @@ def generate_field_value_entity(databot: 'DataBot') -> Entity:
     for field_schema in databot.project.data_schema.field_schemas:
         if field_schema.categorical:
             for category in field_schema.categories:
-                entries[category.value] = category.synonyms
+                entries[category.value] = category.synonyms['en'].copy()
                 databot.field_value_map[category.value] = field_schema.original_name
     return Entity('field_value', entries=entries)
 

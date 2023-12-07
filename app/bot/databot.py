@@ -14,16 +14,20 @@ from pandas import DataFrame
 from app.bot.library.databot_entities import DataBotEntities
 from app.bot.library.databot_intents import DataBotIntents
 from app.bot.library.session_keys import FILTERS
-from app.bot.workflows.check_parameters import CheckParameters
 from app.bot.workflows.llm_query import LLMQuery
-from app.bot.workflows.queries.area_chart import AreaChart
-from app.bot.workflows.queries.bar_chart import BarChart
-from app.bot.workflows.queries.boxplot_chart import BoxplotChart
-from app.bot.workflows.queries.histogram_chart import HistogramChart
-from app.bot.workflows.queries.line_chart import LineChart
-from app.bot.workflows.queries.pie_chart import PieChart
-from app.bot.workflows.queries.row_count import RowCount
-from app.bot.workflows.queries.scatter_chart import ScatterChart
+from app.bot.workflows.queries.charts.area_chart import AreaChart
+from app.bot.workflows.queries.charts.bar_chart import BarChart
+from app.bot.workflows.queries.charts.boxplot_chart import BoxplotChart
+from app.bot.workflows.queries.charts.histogram_chart import HistogramChart
+from app.bot.workflows.queries.charts.line_chart import LineChart
+from app.bot.workflows.queries.charts.pie_chart import PieChart
+from app.bot.workflows.queries.charts.scatter_chart import ScatterChart
+from app.bot.workflows.queries.tables.field_distinct import FieldDistinct
+from app.bot.workflows.queries.tables.frequent_value_in_field import FrequentValueInField
+from app.bot.workflows.queries.tables.select_fields_with_conditions import SelectFieldsWithConditions
+from app.bot.workflows.queries.tables.value1_vs_value2 import Value1VSValue2
+from app.bot.workflows.queries.tables.value_frequency import ValueFrequency
+from schema.field_schema import FieldSchema
 from schema.filter import Filter
 from ui.utils.session_state_keys import BOT_DF_TITLE, SESSION_ID
 
@@ -39,6 +43,7 @@ class DataBot:
         self.field_value_map: dict[str, str] = {}
         self.entities: DataBotEntities = DataBotEntities(self)
         self.intents: DataBotIntents = DataBotIntents(self)
+        self.key_fields: list[FieldSchema] = self.project.data_schema.get_key_fields()
         with open('app/bot/library/messages.json', 'r', encoding='utf-8') as file:
             self.messages: dict[str, str] = json.load(file)
         logging.basicConfig(level=logging.INFO, format='{levelname} - {asctime}: {message}', style='{')
@@ -49,7 +54,12 @@ class DataBot:
         self.s0 = self.bot.new_state('s0')
         self.llm_query_workflow = LLMQuery(self)
 
-        self.row_count_workflow = RowCount(self)
+        # Tables
+        self.field_distinct = FieldDistinct(self)
+        self.frequent_value_in_field = FrequentValueInField(self)
+        self.value_frequency = ValueFrequency(self)
+        self.value1_vs_value2 = Value1VSValue2(self)
+        self.select_fields_with_conditions = SelectFieldsWithConditions(self)
 
         # Plots/Charts
         self.histogram_chart_workflow = HistogramChart(self)
@@ -59,8 +69,6 @@ class DataBot:
         self.scatter_chart_workflow = ScatterChart(self)
         self.area_chart_workflow = AreaChart(self)
         self.boxplot_chart_workflow = BoxplotChart(self)
-
-        self.check_parameters_workflow = CheckParameters(self)
 
         def initial_body(session: Session):
             session.set(FILTERS, [])
@@ -74,27 +82,21 @@ class DataBot:
             session.reply(self.messages['select_action'])
 
         self.s0.set_body(s0_body)
-        # self.s0.when_intent_matched_go_to(self.intents.show_field_distinct, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.most_frequent_value_in_field, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.least_frequent_value_in_field, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.value_frequency, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.value1_more_than_value2, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.value1_less_than_value2, self.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.row_count, self.check_parameters_workflow.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.field_count, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.select_fields_with_conditions, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.numeric_field_operator_value, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.datetime_field_operator_value, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.textual_field_operator_value, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.numeric_field_between_values, self.check_parameters)
-        # self.s0.when_intent_matched_go_to(self.intents.datetime_field_between_values, self.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.histogram_chart, self.check_parameters_workflow.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.line_chart, self.check_parameters_workflow.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.bar_chart, self.check_parameters_workflow.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.pie_chart, self.check_parameters_workflow.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.scatter_chart, self.check_parameters_workflow.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.area_chart, self.check_parameters_workflow.check_parameters)
-        self.s0.when_intent_matched_go_to(self.intents.boxplot_chart, self.check_parameters_workflow.check_parameters)
+        # Plots/Charts
+        self.s0.when_intent_matched_go_to(self.intents.histogram_chart, self.histogram_chart_workflow.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.line_chart, self.line_chart_workflow.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.bar_chart, self.bar_chart_workflow.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.pie_chart, self.pie_chart_workflow.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.scatter_chart, self.scatter_chart_workflow.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.area_chart, self.area_chart_workflow.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.boxplot_chart, self.boxplot_chart_workflow.main_state)
+        # Tables
+        self.s0.when_intent_matched_go_to(self.intents.most_frequent_value_in_field, self.frequent_value_in_field.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.least_frequent_value_in_field, self.frequent_value_in_field.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.value_frequency, self.value_frequency.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.value1_vs_value2, self.value1_vs_value2.main_state)
+        self.s0.when_intent_matched_go_to(self.intents.select_fields_with_conditions, self.select_fields_with_conditions.main_state)
+        # LLM Fallback
         self.s0.when_no_intent_matched_go_to(self.llm_query_workflow.llm_query)
 
     def _set_bot_properties(self):
@@ -128,3 +130,9 @@ class DataBot:
                           message=message)
         self.platform._send(session.id, payload)
         pd.set_option('mode.chained_assignment', 'warn')
+
+    def reply(self, session: Session, data: DataFrame, title: str, message_key: str):
+        if len(data) == 0:
+            session.reply(self.messages['nothing_found'].format(title))
+        else:
+            session.reply(self.messages[message_key].format(title))

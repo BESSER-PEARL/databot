@@ -22,3 +22,10 @@ class DataSchema:
 
     def to_dict(self):
         return {'field_schemas': [field_schema.to_dict() for field_schema in self.field_schemas]}
+
+    def get_key_fields(self) -> list[FieldSchema]:
+        key_fields: list[FieldSchema] = []
+        for field in self.field_schemas:
+            if field.key:
+                key_fields.append(field)
+        return key_fields
