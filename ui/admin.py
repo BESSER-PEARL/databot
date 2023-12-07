@@ -9,62 +9,33 @@ import streamlit_antd_components as sac
 from app.app import get_app
 from app.project import Project
 from schema.field_type import BOOLEAN, DATETIME, NUMERIC, TEXTUAL
-from ui.utils.session_state_keys import ALL_PROJECTS_BUTTON, CKAN, COUNT_CSVS, COUNT_DATASETS, EDITED_PACKAGES_DF, \
-    IMPORT, IMPORT_OPEN_DATA_PORTAL, METADATA, NEW_PROJECT_BUTTON, NLP_STT_HF_MODEL, OPENAI_API_KEY, \
-    OPEN_DATA_SOURCES, SELECTED_PROJECT, SELECT_ALL_CHECKBOXES, TITLE, UDATA, UPLOAD_DATA
-from ui.sidebar import project_selection
-from ui.utils.utils import clear_box, get_input_value
+from ui.utils.session_state_keys import CKAN, COUNT_CSVS, COUNT_DATASETS, EDITED_PACKAGES_DF, \
+    IMPORT, IMPORT_OPEN_DATA_PORTAL, METADATA, OPEN_DATA_SOURCES, SELECTED_PROJECT, SELECT_ALL_CHECKBOXES, TITLE, \
+    UDATA, UPLOAD_DATA
+from ui.sidebar import admin_menu
+from ui.utils.utils import clear_box, get_input_value, project_selection
 
 
 def admin():
     """Show the admin container. The different views in the admin page are:
 
-    - New project
+    - Create project
 
-    - Project customization
+    - Manage project
 
     - All projects
     """
-    app = get_app()
     project = st.session_state[SELECTED_PROJECT] if SELECTED_PROJECT in st.session_state else None
 
-    if NEW_PROJECT_BUTTON not in st.session_state:
-        st.session_state[NEW_PROJECT_BUTTON] = False
-    if ALL_PROJECTS_BUTTON not in st.session_state:
-        st.session_state[ALL_PROJECTS_BUTTON] = False
     with st.sidebar:
-        project_selection()
-        all_projects_button = st.button('All projects')
-        new_project_button = st.button('New project')
-        if all_projects_button:
-            st.session_state[ALL_PROJECTS_BUTTON] = True
-            st.session_state[NEW_PROJECT_BUTTON] = False
-        if new_project_button:
-            st.session_state[ALL_PROJECTS_BUTTON] = False
-            st.session_state[NEW_PROJECT_BUTTON] = True
         st.divider()
-        st.subheader('Settings')
-        app.properties[OPENAI_API_KEY] = st.text_input(
-            label='OpenAI API key',
-            help='Introduce your OpenAI API key',
-            type='password',
-            value=app.properties[OPENAI_API_KEY]
-        )
-        app.properties[NLP_STT_HF_MODEL] = st.text_input(
-            label='HuggingFace Speech2Text model',
-            help='Introduce a model ID from HuggingFace',
-            value=app.properties[NLP_STT_HF_MODEL],
-            disabled=True
-        )
-    if st.session_state[NEW_PROJECT_BUTTON] or not project:
-        if st.button('← Go back'):
-            st.session_state[ALL_PROJECTS_BUTTON] = False
-            st.session_state[NEW_PROJECT_BUTTON] = False
-            st.rerun()
+        admin_page = admin_menu()
+
+    if admin_page == 'Create project' or not project:
         upload_data()
         st.divider()
         import_open_data_portal()
-    elif st.session_state[ALL_PROJECTS_BUTTON]:
+    elif admin_page == 'All projects':
         # TODO: Cannot click on all projects when in new project
         all_projects_container()
     elif project:
@@ -92,8 +63,10 @@ def upload_data():
                 else:
                     project = Project(app, project_name, pd.read_csv(uploaded_file))
                     st.session_state[SELECTED_PROJECT] = project
-                    st.session_state[NEW_PROJECT_BUTTON] = False  # exit the new project UI
-                    st.rerun()
+                    st.info(f'The project {project.name} has been created! Go to **Manage project** to train a 🤖 bot upon it.')
+                    if len(app.projects) == 1:
+                        # If first project, rerun
+                        st.rerun()
 
 
 def import_open_data_portal():
@@ -226,15 +199,10 @@ def all_projects_container():
     app = get_app()
 
     st.header('All projects')
-    general_buttons_cols = st.columns([0.15, 0.15, 0.15, 0.15, 0.15, 0.25])
+    general_buttons_cols = st.columns([0.15, 0.15, 0.15, 0.15, 0.4])
     with general_buttons_cols[0]:
-        if st.button('← Go back', use_container_width=True):
-            st.session_state[NEW_PROJECT_BUTTON] = False
-            st.session_state[ALL_PROJECTS_BUTTON] = False
-            st.rerun()
-    with general_buttons_cols[1]:
         if st.button('Train All', use_container_width=True, type='primary'):
-            with general_buttons_cols[5]:
+            with general_buttons_cols[4]:
                 count = 0
                 progress_bar = st.progress(0, text='Starting training of all projects')
                 projects = [p for p in app.projects if not p.bot_running]
@@ -244,9 +212,9 @@ def all_projects_container():
                     project.train_bot()
                     count += 1
                 progress_bar.progress(100, text='All projects have been successfully trained!')
-    with general_buttons_cols[2]:
+    with general_buttons_cols[1]:
         if st.button('Run All', use_container_width=True, type='primary'):
-            with general_buttons_cols[5]:
+            with general_buttons_cols[4]:
                 count = 0
                 progress_bar = st.progress(0, text='Running all projects')
                 projects = [p for p in app.projects if (p.bot_trained and (not p.bot_running))]
@@ -256,9 +224,9 @@ def all_projects_container():
                     project.run_bot()
                     count += 1
                 progress_bar.progress(100, text='All projects are now running !')
-    with general_buttons_cols[3]:
+    with general_buttons_cols[2]:
         if st.button('Train & Run All', use_container_width=True, type='primary'):
-            with general_buttons_cols[5]:
+            with general_buttons_cols[4]:
                 count = 0
                 progress_bar = st.progress(0, text='Training and running all projects')
                 projects = [p for p in app.projects if not p.bot_running]
@@ -271,9 +239,9 @@ def all_projects_container():
                     project.run_bot()
                     count += 1
                 progress_bar.progress(100, text='All projects trained and running!')
-    with general_buttons_cols[4]:
+    with general_buttons_cols[3]:
         if st.button('Stop All', use_container_width=True, type='primary'):
-            with general_buttons_cols[5]:
+            with general_buttons_cols[4]:
                 count = 0
                 progress_bar = st.progress(0, text='Stopping all projects')
                 projects = [p for p in app.projects if p.bot_running]
@@ -325,7 +293,11 @@ def all_projects_container():
 def project_customization_container():
     """Show the Project Customization container."""
     project = st.session_state[SELECTED_PROJECT]
-    st.header(f'Project: {project.name}')
+    c1, c2 = st.columns([0.5, 0.5])
+    with c1:
+        st.header(f'Project: {project.name}')
+    with c2:
+        project_selection('admin')
     # TRAIN/RUN/STOP BUTTONS
     col1, col2, col3, col4 = st.columns([0.15, 0.15, 0.15, 0.55])
     with col1:

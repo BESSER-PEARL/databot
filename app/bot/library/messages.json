@@ -1,5 +1,5 @@
 {
-  "greetings": "Hi! I am a bot that can answer questions about a data source",
+  "greetings": "\uD83D\uDC4B\uD83C\uDFFB Hi! I am a bot that can answer questions about a data source",
   "select_action": "How can I help you?",
   "default_fallback_message": "Sorry, I didn't get it",
   "nothing_found": "The answer I generated, {0}, seems to be empty...",

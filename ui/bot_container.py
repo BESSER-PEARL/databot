@@ -120,7 +120,7 @@ def bot_container():
         #chat_box {{
             box-shadow: rgb(0 0 0 / 20%) 0px 2px 1px -1px, rgb(0 0 0 / 14%) 0px 1px 1px 0px, rgb(0 0 0 / 12%) 0px 1px 3px 0px;
             border-radius: 15px;
-            height: {get_page_height(220)}px;
+            height: {get_page_height(190)}px;
             overflow: scroll;
         }}
     """
@@ -128,9 +128,9 @@ def bot_container():
     with chat_box[0]:
         st.write('')
         if not project:
-            message(f'Hi! This is where you will be able to chat with an intelligent assistant about data sources. First, you need to create a project with some data. You can do it in the Admin page!', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
+            message(f'👋🏻 Hi! This is where you will be able to chat with an intelligent assistant about data sources. First, you need to create a project with some data. You can do it in the Admin page!', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
         elif not project.bot_running:
-            message(f'Hi! I am your assistant to explore {project.name}.', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
+            message(f'👋🏻 Hi! I am your assistant to explore {project.name}.', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
             message(f'I am afraid I cannot help you right now because I have not been trained yet 😢', is_user=False, key=f'message_{m_key()}', avatar_style=NO_AVATAR, logo=None)
         else:
             check_websocket_connection()

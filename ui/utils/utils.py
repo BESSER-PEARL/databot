@@ -2,7 +2,31 @@ import streamlit as st
 from st_screen_stats import ScreenData
 from streamlit.components.v1 import html
 
-from ui.utils.session_state_keys import SCREEN_DATA
+from app.app import get_app
+from ui.utils.session_state_keys import SCREEN_DATA, SELECTED_PROJECT
+
+
+def project_selection(page):
+    """Show a project selection container"""
+    app = get_app()
+    project = st.session_state[SELECTED_PROJECT] if SELECTED_PROJECT in st.session_state else None
+
+    def update_selected_project():
+        st.session_state[SELECTED_PROJECT] = app.get_project(st.session_state[f'select_project_selectbox_{page}'])
+
+    if page == 'admin':
+        help_message = 'Select the project you want to manage'
+    elif page == 'playground':
+        help_message = 'Select a project to start chatting with its bot'
+    selected_project = st.selectbox(
+        label='Select a project',
+        options=[project.name for project in app.projects],
+        index=app.projects.index(project) if project else 0,
+        key=f'select_project_selectbox_{page}',
+        on_change=update_selected_project,
+        help=help_message
+    )
+    st.session_state[SELECTED_PROJECT] = app.get_project(selected_project)
 
 
 def clear_box(key: str):
@@ -72,9 +96,9 @@ def disable_input_focusout():
 def remove_top_margin(page: str):
     """Remove the top margin of a page"""
     page_margins = {
-        'Playground': -170,
+        'Playground': -140,
         'Admin': -120,
-        'Settings': 0
+        'Settings': -120
     }
     st.markdown(
         f"""
