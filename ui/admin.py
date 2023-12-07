@@ -87,10 +87,13 @@ def upload_data():
             else:
                 if project_name is None or project_name == '':
                     project_name = uploaded_file.name[:-4]  # remove .csv file extension
-                project = Project(app, project_name, pd.read_csv(uploaded_file))
-                st.session_state[SELECTED_PROJECT] = project
-                st.session_state[NEW_PROJECT_BUTTON] = False  # exit the new project UI
-                st.rerun()
+                if project_name in [project.name for project in app.projects]:
+                    st.error(f"The project name '{project_name}' already exists. Please choose another one")
+                else:
+                    project = Project(app, project_name, pd.read_csv(uploaded_file))
+                    st.session_state[SELECTED_PROJECT] = project
+                    st.session_state[NEW_PROJECT_BUTTON] = False  # exit the new project UI
+                    st.rerun()
 
 
 def import_open_data_portal():
