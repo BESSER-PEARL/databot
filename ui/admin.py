@@ -28,7 +28,6 @@ def admin():
     project = st.session_state[SELECTED_PROJECT] if SELECTED_PROJECT in st.session_state else None
 
     with st.sidebar:
-        st.divider()
         admin_page = admin_menu()
 
     if admin_page == 'Create project' or not project:

@@ -15,6 +15,7 @@ def sidebar_menu():
 def admin_menu():
     app = get_app()
     page = sac.menu([
+        sac.MenuItem(type='divider'),
         sac.MenuItem('Manage project', icon='sliders', disabled=not app.projects),
         sac.MenuItem('All projects', icon='folder2-open', disabled=not app.projects),
         sac.MenuItem('Create project', icon='plus-circle'),

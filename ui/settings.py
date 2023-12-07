@@ -20,5 +20,5 @@ def settings():
             label='HuggingFace Speech2Text model',
             help='Introduce a model ID from HuggingFace',
             value=app.properties[NLP_STT_HF_MODEL],
-            disabled=True
+            # disabled=True
         )
