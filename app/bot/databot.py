@@ -13,7 +13,7 @@ from pandas import DataFrame
 
 from app.bot.library.databot_entities import DataBotEntities
 from app.bot.library.databot_intents import DataBotIntents
-from app.bot.library.session_keys import FILTERS
+from app.bot.library.session_keys import FILTERS, LLM_ANSWERS_ENABLED
 from app.bot.workflows.llm_query import LLMQuery
 from app.bot.workflows.queries.charts.area_chart import AreaChart
 from app.bot.workflows.queries.charts.bar_chart import BarChart
@@ -72,8 +72,9 @@ class DataBot:
 
         def initial_body(session: Session):
             session.set(FILTERS, [])
+            session.set(LLM_ANSWERS_ENABLED, True)
             session.reply(json.dumps({SESSION_ID: session.id}))
-            session.reply(self.messages['greetings'])
+            session.reply(self.messages['greetings'].format(self.project.name))
 
         self.initial.set_body(initial_body)
         self.initial.go_to(self.s0)

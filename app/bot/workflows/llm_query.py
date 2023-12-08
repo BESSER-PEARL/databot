@@ -7,6 +7,8 @@ from besser.bot.core.session import Session
 from openai import OpenAI
 from pandasql import sqldf
 
+from app.bot.library.session_keys import LLM_ANSWERS_ENABLED
+
 if TYPE_CHECKING:
     from app.bot.databot import DataBot
 
@@ -23,7 +25,7 @@ class LLMQuery:
         self.llm_query = self.databot.bot.new_state('llm_query')
 
         def llm_query_body(session: Session):
-            if self.client:
+            if self.client and session.get(LLM_ANSWERS_ENABLED):
                 try:
                     data_schema_dict = self.databot.project.data_schema.to_dict()
                     response = self.query_openai(session.message, data_schema_dict)

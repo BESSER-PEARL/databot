@@ -18,6 +18,6 @@ def admin_menu():
         sac.MenuItem(type='divider'),
         sac.MenuItem('Manage project', icon='sliders', disabled=not app.projects),
         sac.MenuItem('All projects', icon='folder2-open', disabled=not app.projects),
-        sac.MenuItem('Create project', icon='plus-circle'),
+        sac.MenuItem('New project', icon='plus-circle'),
     ], open_all=True, index=0 if app.projects else 2)
     return page

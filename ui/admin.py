@@ -19,7 +19,7 @@ from ui.utils.utils import clear_box, get_input_value, project_selection
 def admin():
     """Show the admin container. The different views in the admin page are:
 
-    - Create project
+    - New project
 
     - Manage project
 
@@ -30,7 +30,7 @@ def admin():
     with st.sidebar:
         admin_page = admin_menu()
 
-    if admin_page == 'Create project' or not project:
+    if admin_page == 'New project' or not project:
         upload_data()
         st.divider()
         import_open_data_portal()
@@ -292,7 +292,7 @@ def all_projects_container():
 def project_customization_container():
     """Show the Project Customization container."""
     project = st.session_state[SELECTED_PROJECT]
-    c1, c2 = st.columns([0.5, 0.5])
+    c1, c2 = st.columns([0.45, 0.55])
     with c1:
         st.header(f'Project: {project.name}')
     with c2:

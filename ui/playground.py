@@ -2,7 +2,7 @@ import queue
 import streamlit as st
 import streamlit_antd_components as sac
 
-from app.bot.library.session_keys import FILTERS
+from app.bot.library.session_keys import FILTERS, LLM_ANSWERS_ENABLED
 from schema.field_type import BOOLEAN, DATETIME, NUMERIC, TEXTUAL
 from schema.filter import Filter, boolean_operators, datetime_operators, numeric_operators, textual_operators
 from ui.bot_container import bot_container
@@ -196,7 +196,17 @@ def playground():
                     st.session_state[PROJECTS][project.name][TABLES] = [(f'{project.name}: original data', project.df, None)]
                     st.session_state[PROJECTS][project.name][TABLE_INDEX] = 0
                     project.databot.bot.reset(session_id)
-                st.button(label='🔄 Reset chat', on_click=reset_chat)
+                st.button(label='🔄 Reset chat', on_click=reset_chat, help='Clear the chat history.')
+
+                toggle_button(
+                    '✨ Enable AI answers',
+                    key=project.name + LLM_ANSWERS_ENABLED,
+                    initial_value=True,
+                    help='When the bot does not understand your queries, it can use AI to try to find the best possible answer.'
+                )
+                session_id = st.session_state[PROJECTS][project.name][SESSION_ID]
+                if session_id and project.databot.bot.get_session(session_id):
+                    project.databot.bot.get_session(session_id).set(LLM_ANSWERS_ENABLED, st.session_state[project.name + LLM_ANSWERS_ENABLED])
 
         else:
             st.info(
