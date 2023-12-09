@@ -8,6 +8,7 @@ def sidebar_menu():
         sac.MenuItem('Playground', icon='robot'),
         sac.MenuItem('Admin', icon='person'),
         sac.MenuItem('Settings', icon='gear'),
+        sac.MenuItem('About DataBot', icon='info-circle'),
     ], open_all=True)
     return page
 

@@ -98,8 +98,9 @@ def remove_top_margin(page: str):
     """Remove the top margin of a page"""
     page_margins = {
         'Playground': -140,
-        'Admin': -120,
-        'Settings': -120
+        'Admin': -100,
+        'Settings': -120,
+        'About DataBot': -120
     }
     st.markdown(
         f"""

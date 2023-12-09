@@ -1,24 +1,24 @@
-# Template for BESSER-PEARL Organization Repositories
+# DataBot: Reliable data exploration through chatbots
 
-This Github template provides a collection of base files and configuration recommendations for kick-starting a new project in the BESSER-PEARL organization.
+This platform is used to create bots whose job is to answer questions about a specific data source. It allows the automatic
+generation of a chat/voice bot swarm to attend all the data sources in an **Open Data Portal**.
 
-## ⚒️ Using this template for your project
+The highlights of DataBot are:
 
-To use this template when creating a new repository in the BESSER-PEARL GitHub organization, you have to set the `Repository template` field to `BESSER-PEARL/template`.
+- 💻 **Import data** through a friendly UI.
+  - 💾 Upload your dataset directly to the platform, or...
+  - 🌐 Automatically load all the data sources from an Open Data Portal through its API.
+- 🔎 A **data schema** is automatically inferred from the data source, and can be **enhanced** 💪 to improve the bot knowledge about 
+  the data (e.g., synonyms or translations). This can be done either manually or using ✨AI.
+- 🤖 **Automatically generate a chatbot for each data source**. These chatbots are powered by the [**BESSER Bot Framework**](https://github.com/BESSER-PEARL/bot-framework).
+  They recognize the user intent and generate the appropriate answer. So, no hallucinations at all.
+- Generation of tabular📅 and graphical📈 answers.
+- 🎙️ Interact with the chatbots either writing or speaking: **voice recognition integrated**.
+- ✨ For those questions the bot fails to identify, AI can be used to generate the best possible answer.
+- ✨ For the AI components (data schema enhancement and answer generation), we use the OpenAI API.
 
-The new repository will use this one as a template, meaning that it will contain all the files. 
-Once the new repository is created, you can edit its files to adapt them to your needs.
+### License
 
-## ☑️ Guidelines & Contributing
+This project is licensed under the [MIT](https://mit-license.org/) license
 
-You will find a guided description of the steps you should follow in the [guidelines](guidelines.md) file.
-
-## 📓 Publishing the documentation to ReadTheDocs
-
-This template also provides the base files to deploy the repository documentation using [ReadTheDocs](https://docs.readthedocs.io/en/stable/index.html). In the `docs` folder you can find and edit all the Sphinx documentation sources. You can check the documentation generated from this template at the [following link](https://besser-template.readthedocs.io/en/latest/). 
-
-For more information on how to connect your repository, customize, and deploy the documentation with ReadTheDocs, you can follow [this tutorial](https://docs.readthedocs.io/en/stable/tutorial/index.html). If you do not plan to use ReadTheDocs, remove the `docs` folder and the `.readthedocs.yaml` file from your repository.
-
-## 📚 References
-
-This project is an extended and adapted version (to the [BESSER-PEARL organization](https://github.com/organizations/BESSER-PEARL/)) of the [GitHub Best Practices Template](https://github.com/jlcanovas/gh-best-practices-template.git)
+Copyright © 2023 Luxembourg Institute of Science and Technology. All rights reserved.

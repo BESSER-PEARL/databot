@@ -6,6 +6,7 @@ from streamlit.web import cli as stcli
 from app.app import create_app
 from ui.admin import admin
 from ui.playground import playground
+from ui.utils.readme import about
 from ui.utils.session_monitoring import run_thread_session_monitoring
 from ui.settings import settings
 from ui.sidebar import sidebar_menu
@@ -36,6 +37,8 @@ if __name__ == "__main__":
             admin()
         elif page == 'Settings':
             settings()
+        elif page == 'About DataBot':
+            about()
 
         disable_input_focusout()
     else:
