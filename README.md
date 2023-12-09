@@ -17,6 +17,8 @@ The highlights of DataBot are:
 - ✨ For those questions the bot fails to identify, AI can be used to generate the best possible answer.
 - ✨ For the AI components (data schema enhancement and answer generation), we use the OpenAI API.
 
+![DataBot Playground Screenshot](docs/source/img/playground_screenshot.png)
+
 ### License
 
 This project is licensed under the [MIT](https://mit-license.org/) license

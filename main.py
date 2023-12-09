@@ -3,14 +3,14 @@ import sys
 import streamlit as st
 from streamlit.web import cli as stcli
 
-from app.app import create_app
-from ui.admin import admin
-from ui.playground import playground
-from ui.utils.readme import about
-from ui.utils.session_monitoring import run_thread_session_monitoring
-from ui.settings import settings
-from ui.sidebar import sidebar_menu
-from ui.utils.utils import disable_input_focusout, remove_header, remove_top_margin, \
+from src.app.app import create_app
+from src.ui.admin import admin
+from src.ui.playground import playground
+from src.ui.about import about
+from src.ui.utils.session_monitoring import run_thread_session_monitoring
+from src.ui.settings import settings
+from src.ui.sidebar import sidebar_menu
+from src.ui.utils.utils import disable_input_focusout, remove_header, remove_top_margin, \
     set_screen_data_component
 
 st.set_page_config(layout="wide")
