@@ -118,9 +118,9 @@ def bot_container():
 
     chat_box_css = f"""
         #chat_box {{
-            box-shadow: rgb(0 0 0 / 20%) 0px 2px 1px -1px, rgb(0 0 0 / 14%) 0px 1px 1px 0px, rgb(0 0 0 / 12%) 0px 1px 3px 0px;
-            border-radius: 15px;
-            height: {get_page_height(190)}px;
+            box-shadow: rgb(0 0 0 / 12%) 1px 1px 3px 0px, rgb(0 0 0 / 5%) -1px -1px 3px 0px;
+            border-radius: 22px;
+            height: {get_page_height(250)}px;
             overflow: scroll;
         }}
     """

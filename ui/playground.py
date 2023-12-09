@@ -39,12 +39,9 @@ def playground():
     bot_col, dash_col = st.columns([BOT_CONTAINER_WIDTH, 1 - BOT_CONTAINER_WIDTH])
 
     with bot_col:
-        header_col1, header_col2 = st.columns([0.5, 0.5])
-        with header_col1:
-            st.subheader('')
-            st.subheader(f"🤖 DataBot")
-        with header_col2:
-            project_selection('playground')
+        st.write('')
+        st.subheader(f"🤖 DataBot")
+        project_selection('playground')
         bot_container()
     with dash_col:
         # TODO: SPECIFIC METHOD FOR DASHBOARD, LIKE bot_container()

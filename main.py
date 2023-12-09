@@ -16,8 +16,6 @@ st.set_page_config(layout="wide")
 
 if __name__ == "__main__":
     if st.runtime.exists():
-        # Used to get screen info, e.g., the height and width
-        set_screen_data_component()
         # Create the app, only 1 time, shared across sessions
         create_app()
         # Run session monitoring in another thread, only 1 time
@@ -31,6 +29,8 @@ if __name__ == "__main__":
         remove_header()
         # Display a page
         if page == 'Playground':
+            # Used to get screen info, e.g., the height and width
+            set_screen_data_component()
             playground()
         elif page == 'Admin':
             admin()

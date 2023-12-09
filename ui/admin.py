@@ -1,3 +1,6 @@
+import concurrent.futures
+import threading
+import time
 from io import StringIO
 
 import chardet
@@ -5,6 +8,7 @@ import pandas as pd
 import requests
 import streamlit as st
 import streamlit_antd_components as sac
+from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 from app.app import get_app
 from app.project import Project
@@ -62,7 +66,7 @@ def upload_data():
                 else:
                     project = Project(app, project_name, pd.read_csv(uploaded_file))
                     st.session_state[SELECTED_PROJECT] = project
-                    st.info(f'The project {project.name} has been created! Go to **Manage project** to train a 🤖 bot upon it.')
+                    st.info(f'The project **{project.name}** has been created! Go to **Manage project** to train a 🤖 bot upon it.')
                     if len(app.projects) == 1:
                         # If first project, rerun
                         st.rerun()
@@ -131,6 +135,7 @@ def import_ckan_portal(base_url: str, submitted_base_url: bool, import_projects:
             count_imports = 0
             total_imports = (st.session_state[EDITED_PACKAGES_DF]['Import'] == True).sum()
             import_progress = st.progress(0, text=f'Imported 0/{total_imports} projects')
+            finish_message = st.empty()
         st.subheader(f"{len(st.session_state[OPEN_DATA_SOURCES])} packages")
         col1, col2, col3 = st.columns([0.2, 0.2, 0.6])
         # Select/deselect all resources
@@ -163,32 +168,66 @@ def import_ckan_portal(base_url: str, submitted_base_url: bool, import_projects:
         st.session_state[EDITED_PACKAGES_DF] = st.data_editor(packages_df, use_container_width=True,
                                                                 disabled=['Name', 'Title', 'Resources', 'CSVs'])
     if import_projects:
-        # Create all projects, download their data
-        # Iterate over the edited DataFrame to get the 'Import' boolean value
-        for index, row in st.session_state[EDITED_PACKAGES_DF].iterrows():
-            if row['Import']:
-                package = row['Name']
-                metadata = st.session_state[OPEN_DATA_SOURCES][package]
-                # TODO: ONLY 1 CSV IN A PACKAGE ALLOWED
-                for resource in metadata[METADATA]['resources']:
-                    if resource['name'].endswith('.csv'):
-                        data_url = resource['url']
-                        # Download data
-                        response = requests.get(data_url)
-                        try:
-                            result = chardet.detect(response.content)
-                            encoding = result['encoding']
-                            df = pd.read_csv(StringIO(response.content.decode(encoding)), low_memory=False)
-                            # Create project with the downloaded data into a DataFrame
-                            project = Project(app, package, df)
-                            count_imports += 1
-                            import_progress.progress(count_imports / total_imports,
-                                                     text=f'Imported {count_imports}/{total_imports} projects')
-                            # TODO: This break forces only 1 csv being downloaded for each package
+        start_time = time.time()
+        lock = threading.Lock()  # Create a lock for thread safety
+        projects = []
+
+        def download_and_process(package, resource, c=0):
+            if c > 500:
+                st.error(f"Failed to download {package}. Maximum number of attempts exceeded.")
+                return
+            try:
+                data_url = resource['url']
+                # Download data
+                response = requests.get(data_url)
+                if response.status_code == 503:
+                    # Retrying download
+                    download_and_process(package, resource, c+1)
+                    return
+                else:
+                    result = chardet.detect(response.content)
+                    encoding = result['encoding']
+                    df = pd.read_csv(StringIO(response.content.decode(encoding)), low_memory=False)
+                    # Update progress bar
+                    with lock:
+                        nonlocal count_imports
+                        count_imports += 1
+                        import_progress.progress(count_imports / total_imports,
+                                                 text=f'Imported {count_imports}/{total_imports} projects')
+                        projects.append((package, df))
+
+            except Exception as e:
+                print(f"Failed to fetch data from {package}")
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+            # Use executor.map to parallelize the downloads
+            futures = []
+            for index, row in st.session_state[EDITED_PACKAGES_DF].iterrows():
+                if row['Import']:
+                    package = row['Name']
+                    metadata = st.session_state[OPEN_DATA_SOURCES][package]
+                    for resource in metadata[METADATA]['resources']:
+                        if resource['name'].endswith('.csv'):
+                            future = executor.submit(download_and_process, package, resource, 0)
+                            futures.append(future)
                             break
-                        except Exception as e:
-                            st.error(f"Failed to fetch data from {package}")
-        st.rerun()
+            for t in executor._threads:
+                add_script_run_ctx(t)
+
+        concurrent.futures.wait(futures)
+        for i, p in enumerate(sorted(projects, key=lambda x: x[0])):
+            project = Project(app, p[0], p[1])
+            if i == 0:
+                st.session_state[SELECTED_PROJECT] = project
+
+        # Wait for all futures to complete
+        concurrent.futures.wait(futures)
+        end_time = time.time()
+        elapsed_time_seconds = end_time - start_time
+        elapsed_hours = int(elapsed_time_seconds // 3600)
+        elapsed_minutes = int(elapsed_time_seconds // 60)
+        remaining_seconds = elapsed_time_seconds % 60
+        finish_message.info(f"Importing data finished. Elapsed Time: {elapsed_hours}:{elapsed_minutes}:{remaining_seconds:.3f}")
 
 
 def all_projects_container():
@@ -198,62 +237,76 @@ def all_projects_container():
     app = get_app()
 
     st.header('All projects')
-    general_buttons_cols = st.columns([0.15, 0.15, 0.15, 0.15, 0.4])
-    with general_buttons_cols[0]:
-        if st.button('Train All', use_container_width=True, type='primary'):
-            with general_buttons_cols[4]:
-                count = 0
-                progress_bar = st.progress(0, text='Starting training of all projects')
+    general_buttons_cols = st.columns([0.1, 0.1, 0.13, 0.1, 0.12, 0.45])
+    with general_buttons_cols[5]:
+        progress_bar = st.progress(0, '')
+
+    def run_something(funcs, total, action, *args):
+        for f in funcs:
+            f(args)
+        with lock:
+            nonlocal count
+            count += 1
+            progress_bar.progress(count / total,
+                                  text=f'{action} {count}/{total} project bots')
+
+    start_time = time.time()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=20) as executor:
+        # Use executor.map to parallelize the downloads
+        futures = []
+        lock = threading.Lock()  # Create a lock for thread safety
+        count = 0
+        with general_buttons_cols[0]:
+            if st.button('Train All', use_container_width=True, type='primary'):
                 projects = [p for p in app.projects if not p.bot_running]
                 for project in projects:
-                    progress_text = f'Training {count + 1}/{len(projects)}: {project.name}'
-                    progress_bar.progress(count / len(projects), text=progress_text)
-                    project.train_bot()
-                    count += 1
-                progress_bar.progress(100, text='All projects have been successfully trained!')
-    with general_buttons_cols[1]:
-        if st.button('Run All', use_container_width=True, type='primary'):
-            with general_buttons_cols[4]:
-                count = 0
-                progress_bar = st.progress(0, text='Running all projects')
+                    future = executor.submit(run_something, [project.train_bot], len(projects), 'Trained')
+                    futures.append(future)
+
+        with general_buttons_cols[1]:
+            if st.button('Run All', use_container_width=True, type='primary'):
                 projects = [p for p in app.projects if (p.bot_trained and (not p.bot_running))]
                 for project in projects:
-                    progress_text = f'Running {count + 1}/{len(projects)}: {project.name}'
-                    progress_bar.progress(count / len(projects), text=progress_text)
-                    project.run_bot()
-                    count += 1
-                progress_bar.progress(100, text='All projects are now running !')
-    with general_buttons_cols[2]:
-        if st.button('Train & Run All', use_container_width=True, type='primary'):
-            with general_buttons_cols[4]:
-                count = 0
-                progress_bar = st.progress(0, text='Training and running all projects')
+                    future = executor.submit(run_something, [project.run_bot], len(projects), 'Running')
+                    futures.append(future)
+
+        with general_buttons_cols[2]:
+            if st.button('Train & Run All', use_container_width=True, type='primary'):
                 projects = [p for p in app.projects if not p.bot_running]
                 for project in projects:
-                    progress_text = f'Training {count + 1}/{len(projects)}: {project.name}'
-                    progress_bar.progress(count / len(projects), text=progress_text)
-                    project.train_bot()
-                    progress_text = f'Running {count + 1}/{len(projects)}: {project.name}'
-                    progress_bar.progress(count / len(projects), text=progress_text)
-                    project.run_bot()
-                    count += 1
-                progress_bar.progress(100, text='All projects trained and running!')
-    with general_buttons_cols[3]:
-        if st.button('Stop All', use_container_width=True, type='primary'):
-            with general_buttons_cols[4]:
-                count = 0
-                progress_bar = st.progress(0, text='Stopping all projects')
+                    future = executor.submit(run_something, [project.train_bot, project.run_bot], len(projects), 'Trained and running')
+                    futures.append(future)
+
+        with general_buttons_cols[3]:
+            if st.button('Stop All', use_container_width=True, type='primary'):
                 projects = [p for p in app.projects if p.bot_running]
                 for project in projects:
-                    progress_text = f'Stopping {count + 1}/{len(projects)}: {project.name}'
-                    progress_bar.progress(count / len(projects), text=progress_text)
+                    future = executor.submit(run_something, [project.stop_bot], len(projects), 'Stopped')
+                    futures.append(future)
+        for t in executor._threads:
+            add_script_run_ctx(t)
+    concurrent.futures.wait(futures)
+    with general_buttons_cols[4]:
+        if st.button('❌ Delete all', use_container_width=True, type='secondary'):
+            project = app.projects[0]
+            while project is not None:
+                if project.bot_running:
                     project.stop_bot()
-                    count += 1
-                progress_bar.progress(100, text='All projects stopped')
+                project = app.delete_project(project)
+            st.session_state[SELECTED_PROJECT] = None
+    if futures:
+        end_time = time.time()
+        elapsed_time_seconds = end_time - start_time
+        elapsed_hours = int(elapsed_time_seconds // 3600)
+        elapsed_minutes = int(elapsed_time_seconds // 60)
+        remaining_seconds = elapsed_time_seconds % 60
+        with general_buttons_cols[5]:
+            st.info(f"Elapsed Time: {elapsed_hours}:{elapsed_minutes}:{remaining_seconds:.3f}")
+
     for i, project in enumerate(app.projects):
-        button_cols = st.columns([0.55, 0.15, 0.15, 0.15])
+        button_cols = st.columns([0.6, 0.1, 0.1, 0.1, 0.1])
         with button_cols[0]:
-            st.subheader(project.name)
+            st.subheader(f'{i+1}. {project.name}')
         with button_cols[1]:
             disabled = (not bool(project)) or project.bot_running
             if st.button(
@@ -287,16 +340,39 @@ def all_projects_container():
             ):
                 project.stop_bot()
                 st.rerun()
+        with button_cols[4]:
+            if st.button(
+                    key=f'delete_{i}',
+                    label='❌ Delete',
+                    use_container_width=True,
+                    type='secondary'
+            ):
+                if project.bot_running:
+                    project.stop_bot()
+                st.session_state[SELECTED_PROJECT] = app.delete_project(project)  # Return previous project
+                st.rerun()
 
 
 def project_customization_container():
     """Show the Project Customization container."""
+    app = get_app()
     project = st.session_state[SELECTED_PROJECT]
-    c1, c2 = st.columns([0.45, 0.55])
+    c1, c2, c3 = st.columns([0.45, 0.45, 0.1])
     with c1:
         st.header(f'Project: {project.name}')
     with c2:
         project_selection('admin')
+    with c3:
+        if st.button(
+                key='delete',
+                label='❌ Delete',
+                use_container_width=True,
+                type='secondary'
+        ):
+            if project.bot_running:
+                project.stop_bot()
+            st.session_state[SELECTED_PROJECT] = app.delete_project(project)  # Return previous project
+            st.rerun()
     # TRAIN/RUN/STOP BUTTONS
     col1, col2, col3, col4 = st.columns([0.15, 0.15, 0.15, 0.55])
     with col1:
@@ -331,8 +407,6 @@ def project_customization_container():
                 type='primary'
         ):
             project.stop_bot()
-            # del st.session_state['history']
-            # del st.session_state['queue']
             st.rerun()
     with col4:
         if project.bot_running:

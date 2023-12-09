@@ -26,6 +26,14 @@ class App:
                 return project
         return None
 
+    def delete_project(self, project: Project):
+        index = self.projects.index(project)
+        self.projects.remove(project)
+        if self.projects:
+            return self.projects[max(index-1, 0)]
+        else:
+            return None
+
 
 @st.cache_resource
 def create_app():

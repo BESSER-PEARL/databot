@@ -24,6 +24,7 @@ def project_selection(page):
         index=app.projects.index(project) if project else 0,
         key=f'select_project_selectbox_{page}',
         on_change=update_selected_project,
+        label_visibility='collapsed',
         help=help_message
     )
     st.session_state[SELECTED_PROJECT] = app.get_project(selected_project)
