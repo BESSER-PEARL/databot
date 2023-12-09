@@ -9,6 +9,7 @@ from besser.bot.nlp import NLP_LANGUAGE
 from besser.bot.platforms.payload import Payload, PayloadAction
 from besser.bot.platforms.websocket import WEBSOCKET_PORT
 from besser.bot.platforms.websocket.websocket_platform import WebSocketPlatform
+from openai import OpenAI
 from pandas import DataFrame
 
 from app.bot.library.databot_entities import DataBotEntities
@@ -74,6 +75,11 @@ class DataBot:
             session.set(FILTERS, [])
             session.set(LLM_ANSWERS_ENABLED, True)
             session.reply(json.dumps({SESSION_ID: session.id}))
+            try:
+                self.llm_query_workflow.client = OpenAI(api_key=self.project.app.properties['openai_api_key'])
+            except Exception as e:
+                logging.warning('LLM fallback state will not use OpenAI API, there is no OpenAI API key.')
+                self.llm_query_workflow.client = None
             session.reply(self.messages['greetings'].format(self.project.name))
 
         self.initial.set_body(initial_body)

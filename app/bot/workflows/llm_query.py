@@ -17,11 +17,7 @@ class LLMQuery:
 
     def __init__(self, databot: 'DataBot'):
         self.databot: 'DataBot' = databot
-        try:
-            self.client = OpenAI(api_key=self.databot.project.app.properties['openai_api_key'])
-        except Exception as e:
-            logging.warning('LLM fallback state will not use OpenAI API, there is no OpenAI API key.')
-            self.client = None
+        self.client = None
         self.llm_query = self.databot.bot.new_state('llm_query')
 
         def llm_query_body(session: Session):
