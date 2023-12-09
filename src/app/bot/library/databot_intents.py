@@ -4,15 +4,15 @@ from typing import TYPE_CHECKING
 from besser.bot.core.intent.intent import Intent
 from besser.bot.library.entity.base_entities import number_entity
 
-from app.bot.library import session_keys
+from src.app.bot.library import session_keys
 
 if TYPE_CHECKING:
-    from app.bot.databot import DataBot
+    from src.app.bot.databot import DataBot
 
 
 def load_intent(name: str, name_json: str or None = None):
     """Load an intent and its training sentences from a json file"""
-    with open('app/bot/library/intents.json', 'r', encoding='utf-8') as file:
+    with open('src/app/bot/library/intents.json', 'r', encoding='utf-8') as file:
         intents_json = json.load(file)
     if name_json is None:
         name_json = name

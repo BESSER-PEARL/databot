@@ -3,10 +3,10 @@ from typing import TYPE_CHECKING
 
 from besser.bot.core.entity.entity import Entity
 
-from schema.field_type import DATETIME, NUMERIC, TEXTUAL
+from src.schema.field_type import DATETIME, NUMERIC, TEXTUAL
 
 if TYPE_CHECKING:
-    from app.bot.databot import DataBot
+    from src.app.bot.databot import DataBot
 
 
 def generate_field_entity(databot: 'DataBot', t: str or None = None) -> Entity:
@@ -25,7 +25,7 @@ def generate_field_entity(databot: 'DataBot', t: str or None = None) -> Entity:
 
 def generate_operator_entity(name: str) -> Entity:
     entries = {}
-    with open('app/bot/library/field_operators.json', 'r') as file:
+    with open('src/app/bot/library/field_operators.json', 'r') as file:
         field_operators_json = json.load(file)
     for operator in field_operators_json[name]:
         entries[operator] = field_operators_json[name][operator]['en']['synonyms']
@@ -53,7 +53,7 @@ def generate_field_value_entity(databot: 'DataBot') -> Entity:
 def generate_row_name_entity() -> Entity:
     # TODO: Now only default row names
     entries = {}
-    with open('app/bot/library/default_row_names.json', 'r') as file:
+    with open('src/app/bot/library/default_row_names.json', 'r') as file:
         row_names_json = json.load(file)
     for row_name in row_names_json['row_name']['en']:
         entries[row_name] = []
