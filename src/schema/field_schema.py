@@ -22,6 +22,8 @@ class FieldSchema:
         elif t == 'bool':
             # TODO: YES/NO, 0/1 columns, boolean?
             t = BOOLEAN
+        elif t in ['datetime64[ns]', '<M8[ns]']:
+            t = DATETIME
         elif t == 'object':
             # Check if it is datetime
             if self.infer_datetime_type(self.original_name):
@@ -46,6 +48,12 @@ class FieldSchema:
         self._categorical = value
         self._update_categories()
 
+    def get_category(self, value: str) -> Category:
+        for category in self.categories:
+            if category.value == value:
+                return category
+        return None
+
     def _update_categories(self):
         if self._categorical and self.categories is None:
             self.categories = []
@@ -62,20 +70,26 @@ class FieldSchema:
     def to_dict(self):
         field_schema_dict = {
             # 'original_name': self.original_name,
-            # 'readable_name': self.readable_name,
+            'readable_name': self.readable_name,
             'type': self.type.t,
-            # 'num_different_values': self.num_different_values,
+            'num_different_values': self.num_different_values,
+            'synonyms': self.synonyms['en']
             # 'key': self.key,
             # 'categorical': self.categorical,
             # 'tags': self.tags,
         }
         if self.categorical:
-            field_schema_dict['categories'] = {category.value: category.to_json() for category in self.categories}
-        # else:
-        #     field_schema_dict['categories'] = []
+            field_schema_dict['categories'] = {category.value: category.to_dict() for category in self.categories}
+        return field_schema_dict
+
+    def to_dict_simple(self):
+        field_schema_dict = {
+            'type': self.type.t,
+        }
+        if self.categorical:
+            field_schema_dict['categories'] = {category.value: category.to_dict_simple() for category in self.categories}
         if self.synonyms['en']:
             field_schema_dict['synonyms'] = self.synonyms['en']
-
         return field_schema_dict
 
     def infer_datetime_type(self, column_name):

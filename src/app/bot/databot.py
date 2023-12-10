@@ -75,11 +75,6 @@ class DataBot:
             session.set(FILTERS, [])
             session.set(LLM_ANSWERS_ENABLED, True)
             session.reply(json.dumps({SESSION_ID: session.id}))
-            try:
-                self.llm_query_workflow.client = OpenAI(api_key=self.project.app.properties['openai_api_key'])
-            except Exception as e:
-                logging.warning('LLM fallback state will not use OpenAI API, there is no OpenAI API key.')
-                self.llm_query_workflow.client = None
             session.reply(self.messages['greetings'].format(self.project.name))
 
         self.initial.set_body(initial_body)

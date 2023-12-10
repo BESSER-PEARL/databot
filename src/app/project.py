@@ -1,9 +1,10 @@
+from openai import OpenAI
 from pandas import DataFrame
 from typing import TYPE_CHECKING
 
 from src.app.bot.databot import DataBot
 from src.schema.data_schema import DataSchema
-from src.ui.utils.session_state_keys import NLP_LANGUAGE, WEBSOCKET_PORT
+from src.ui.utils.session_state_keys import NLP_LANGUAGE, OPENAI_API_KEY, WEBSOCKET_PORT
 
 if TYPE_CHECKING:
     from src.app.app import App
@@ -23,6 +24,7 @@ class Project:
             NLP_LANGUAGE: 'en',
             WEBSOCKET_PORT: 8765 + len(self.app.projects)
         }
+        self.ai_updated_projects = []
         self.app.add_project(self)
 
     def train_bot(self):
@@ -31,6 +33,7 @@ class Project:
         self.bot_trained = True
 
     def run_bot(self):
+        self.databot.llm_query_workflow.client = OpenAI(api_key=self.app.properties[OPENAI_API_KEY])
         self.databot.bot.run(train=False, sleep=False)
         self.bot_running = True
 

@@ -12,10 +12,12 @@ from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 from src.app.app import get_app
 from src.app.project import Project
+from src.schema.data_schema import DataSchema
 from src.schema.field_type import BOOLEAN, DATETIME, NUMERIC, TEXTUAL
-from src.ui.utils.session_state_keys import CKAN, COUNT_CSVS, COUNT_DATASETS, EDITED_PACKAGES_DF, \
-    IMPORT, IMPORT_OPEN_DATA_PORTAL, METADATA, OPEN_DATA_SOURCES, SELECTED_PROJECT, SELECT_ALL_CHECKBOXES, TITLE, \
-    UDATA, UPLOAD_DATA
+from src.ui.utils.data_schema_enhancement import data_schema_enhancement
+from src.ui.utils.session_state_keys import AI_ICON, CKAN, COUNT_CSVS, COUNT_DATASETS, EDITED_PACKAGES_DF, IMPORT, \
+    IMPORT_OPEN_DATA_PORTAL, METADATA, OPEN_DATA_SOURCES, SELECTED_PROJECT, SELECT_ALL_CHECKBOXES, TITLE, UDATA, \
+    UPLOAD_DATA
 from src.ui.sidebar import admin_menu
 from src.ui.utils.utils import clear_box, get_input_value, project_selection
 
@@ -426,18 +428,39 @@ def project_customization_container():
         body='The data schema is what the bot reads to study your project and be able to:\n'
              '- Understand your questions\n'
              '- Produce quality answers\n\n'
-             'You should review the automatically generated data schema and complete it if you find it '
-             'necessary',
+             'You should review the generated data schema and complete it if you find it '
+             f'necessary, either manually or automatically through {AI_ICON}AI',
         icon='💡')
+    data_schema_button_cols = st.columns([0.2, 0.2, 0.8])
+    with data_schema_button_cols[0]:
+        if st.button(label=f'{AI_ICON} Enhance with AI',
+                     help='Using AI, the data schema can be automatically enhanced and the bot will increase its knowledge about the data.',
+                     use_container_width=True):
+            with st.spinner('Generating...'):
+                ai_updated_fields = data_schema_enhancement(project)
+            project.ai_updated_projects = ai_updated_fields
+    with data_schema_button_cols[1]:
+        if st.button(label='🔄 Reset Data Schema',
+                     help='Reset the data schema to the originally inferred.',
+                     use_container_width=True):
+            project.data_schema = DataSchema(project)
+            project.ai_updated_projects = []
+
     icons_map = {
         NUMERIC: '123',
         TEXTUAL: 'alphabet',
         DATETIME: 'calendar2-date',
         BOOLEAN: 'file-binary'
     }
+
+    def add_ai_icon(name):
+        if name in project.ai_updated_projects:
+            return f'{name}{AI_ICON}'
+        return name
+
     selected_field = sac.tabs(
         [sac.TabsItem(label=field.original_name, icon=icons_map[field.type.t]) for field in project.data_schema.field_schemas],
-        align='start', return_index=False, grow=True)
+        align='start', return_index=False, grow=True, format_func=add_ai_icon)
     col1, col2 = st.columns([0.4, 0.4])
     field = project.data_schema.get_field(selected_field)
     with col1:

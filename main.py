@@ -10,8 +10,7 @@ from src.ui.about import about
 from src.ui.utils.session_monitoring import run_thread_session_monitoring
 from src.ui.settings import settings
 from src.ui.sidebar import sidebar_menu
-from src.ui.utils.utils import disable_input_focusout, remove_header, remove_top_margin, \
-    set_screen_data_component
+from src.ui.utils.utils import disable_input_focusout, remove_header, remove_top_margin, set_screen_data_component
 
 st.set_page_config(layout="wide")
 

@@ -109,6 +109,8 @@ def bot_container():
         st.session_state[USER_INPUT] = ''
         message = Message(STR, user_input, is_user=True)
         st.session_state[PROJECTS][project.name][HISTORY].append(message)
+        if user_input.endswith('?'):
+            user_input = user_input[:-1] + ' ?'
         payload = Payload(action=PayloadAction.USER_MESSAGE,
                           message=user_input)
         try:
@@ -163,6 +165,8 @@ def bot_container():
                 voice_message = Message(t=AUDIO, content=voice_bytes, is_user=True)
                 st.session_state[PROJECTS][project.name][HISTORY].append(voice_message)
                 transcription = app.speech2text.speech2text(voice_bytes)
+                if transcription.endswith('?'):
+                    transcription = transcription[:-1] + ' ?'
                 payload = Payload(action=PayloadAction.USER_MESSAGE, message=transcription)
                 try:
                     ws.send(json.dumps(payload, cls=PayloadEncoder))

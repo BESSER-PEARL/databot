@@ -2,7 +2,7 @@ import streamlit as st
 
 from src.app.project import Project
 from src.app.speech2text import Speech2Text
-from src.ui.utils.session_state_keys import APP, NLP_LANGUAGE, NLP_STT_HF_MODEL, OPENAI_API_KEY
+from src.ui.utils.session_state_keys import APP, NLP_LANGUAGE, NLP_STT_HF_MODEL, OPENAI_API_KEY, OPENAI_MODEL_NAME
 
 
 class App:
@@ -10,6 +10,7 @@ class App:
     def __init__(self):
         self.properties: dict = {
             OPENAI_API_KEY: None,
+            OPENAI_MODEL_NAME: 'gpt-4-1106-preview',
             NLP_LANGUAGE: 'en',  # used for the speech2text component, there is 1 for all the projects
             NLP_STT_HF_MODEL: 'openai/whisper-tiny',
         }

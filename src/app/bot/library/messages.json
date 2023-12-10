@@ -2,6 +2,7 @@
   "greetings": "\uD83D\uDC4B Hi! you are talking with the DataBot of **{0}**",
   "select_action": "How can I help you?",
   "default_fallback_message": "Sorry, I didn't get it",
+  "openai_authentication_error": "⚠\uFE0FThere is not a valid OpenAI API key. You can add it in the ⚙\uFE0F Settings section. Or you can disable AI-generated answers in the project settings.",
   "nothing_found": "The answer I generated, {0}, seems to be empty...",
   "plot_message": "Sure! Take a look at the {0}",
   "table_message": "I created a table where you can see the answer: {0}",

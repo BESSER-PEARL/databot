@@ -18,6 +18,7 @@ METADATA = 'metadata'
 NEW_PROJECT_BUTTON = 'new_project_button'
 OPEN_DATA_SOURCES = 'open_data_sources'
 OPENAI_API_KEY = 'openai_api_key'
+OPENAI_MODEL_NAME = 'openai_model_name'
 PLOT_INDEX = 'plot_index'
 PLOTS = 'plot'
 PLOTLY = 'plotly'
@@ -41,4 +42,7 @@ WEBSOCKET_THREAD = 'websocket_thread'
 NLP_LANGUAGE = 'nlp.language'
 NLP_STT_HF_MODEL = 'nlp.speech2text.hf.model'
 WEBSOCKET_PORT = 'websocket.port'
+
+# EXTRAS
+AI_ICON = '✨'
 

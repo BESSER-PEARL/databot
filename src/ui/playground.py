@@ -8,8 +8,8 @@ from src.schema.filter import Filter, boolean_operators, datetime_operators, num
 from src.ui.bot_container import bot_container
 from src.app.app import get_app
 from src.ui.about import about
-from src.ui.utils.session_state_keys import HISTORY, PLOTS, PLOT_INDEX, PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, \
-    TABLES, TABLE_INDEX
+from src.ui.utils.session_state_keys import AI_ICON, HISTORY, PLOTS, PLOT_INDEX, PROJECTS, QUEUE, SELECTED_PROJECT, \
+    SESSION_ID, TABLES, TABLE_INDEX
 from src.ui.utils.utils import get_page_height, project_selection, toggle_button
 
 BOT_CONTAINER_WIDTH = 0.3
@@ -67,7 +67,7 @@ def playground():
                     toggle_button('Info', key='show_info_button', use_container_width=True)
                     if st.session_state['show_info_button']:
                         if sql:
-                            table_container.info('✨ This table has been obtained with the following AI-generated SQL:')
+                            table_container.info(f'{AI_ICON} This table has been obtained with the following AI-generated SQL:')
                             table_container.code(sql, language='sql')
                             height_offset += 142
                         elif table_index > 0:
@@ -194,10 +194,10 @@ def playground():
                     st.session_state[PROJECTS][project.name][TABLES] = [(f'{project.name}: original data', project.df, None)]
                     st.session_state[PROJECTS][project.name][TABLE_INDEX] = 0
                     project.databot.bot.reset(session_id)
-                st.button(label='🔄 Reset chat', on_click=reset_chat, help='Clear the chat history.')
+                st.button(label='🔄 Reset chat', on_click=reset_chat, help='Clear the chat history and the generated tables/plots.', disabled=not project.bot_running)
 
                 toggle_button(
-                    '✨ Enable AI answers',
+                    f'{AI_ICON} Enable AI answers',
                     key=project.name + LLM_ANSWERS_ENABLED,
                     initial_value=True,
                     help='When the bot does not understand your queries, it can use AI to try to find the best possible answer.'

@@ -3,10 +3,12 @@ import logging
 import traceback
 from typing import TYPE_CHECKING
 
+import openai
 from besser.bot.core.session import Session
 from pandasql import sqldf
 
 from src.app.bot.library.session_keys import LLM_ANSWERS_ENABLED
+from src.ui.utils.session_state_keys import AI_ICON, OPENAI_MODEL_NAME
 
 if TYPE_CHECKING:
     from src.app.bot.databot import DataBot
@@ -20,16 +22,18 @@ class LLMQuery:
         self.llm_query = self.databot.bot.new_state('llm_query')
 
         def llm_query_body(session: Session):
-            if self.client and session.get(LLM_ANSWERS_ENABLED):
+            if session.get(LLM_ANSWERS_ENABLED):
                 try:
-                    data_schema_dict = self.databot.project.data_schema.to_dict()
+                    data_schema_dict = self.databot.project.data_schema.to_dict_simple()
                     response = self.query_openai(session.message, data_schema_dict)
                     if 'sql' in response:
                         df = self.databot.get_df(session)
                         answer = sqldf(response['sql'])
                         self.databot.reply_dataframe(session, answer, response['title'], response['sql'])
-
-                    session.reply('✨ ' + response['answer'])
+                    session.reply(f'{AI_ICON} ' + response['answer'])
+                except openai.AuthenticationError as e:
+                    session.reply(self.databot.messages['default_fallback_message'])
+                    session.reply(self.databot.messages['openai_authentication_error'])
                 except Exception as e:
                     logging.error('An error occurred while calling the OpenAI API. See the attached exception:')
                     traceback.print_exc()
@@ -42,7 +46,7 @@ class LLMQuery:
 
     def query_openai(self, message: str, data_schema: dict):
         response = self.client.chat.completions.create(
-            model="gpt-3.5-turbo-1106",
+            model=self.databot.project.app.properties[OPENAI_MODEL_NAME],
             messages=[
                 {
                     "role": "system",
