@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 from typing import TYPE_CHECKING
 
 import pandas as pd
@@ -9,12 +10,11 @@ from besser.bot.nlp import NLP_LANGUAGE
 from besser.bot.platforms.payload import Payload, PayloadAction
 from besser.bot.platforms.websocket import WEBSOCKET_PORT
 from besser.bot.platforms.websocket.websocket_platform import WebSocketPlatform
-from openai import OpenAI
 from pandas import DataFrame
 
 from src.app.bot.library.databot_entities import DataBotEntities
 from src.app.bot.library.databot_intents import DataBotIntents
-from src.app.bot.library.session_keys import FILTERS, LLM_ANSWERS_ENABLED
+from src.app.bot.library.session_keys import FILTERS, LLM_ANSWERS_ENABLED, REPLY_FALLBACK_MESSAGE
 from src.app.bot.workflows.llm_query import LLMQuery
 from src.app.bot.workflows.queries.charts.area_chart import AreaChart
 from src.app.bot.workflows.queries.charts.bar_chart import BarChart
@@ -74,6 +74,7 @@ class DataBot:
         def initial_body(session: Session):
             session.set(FILTERS, [])
             session.set(LLM_ANSWERS_ENABLED, True)
+            session.set(REPLY_FALLBACK_MESSAGE, True)
             session.reply(json.dumps({SESSION_ID: session.id}))
             session.reply(self.messages['greetings'].format(self.project.name))
 
@@ -81,7 +82,11 @@ class DataBot:
         self.initial.go_to(self.s0)
 
         def s0_body(session: Session):
-            session.reply(self.messages['select_action'])
+            if not session.get(REPLY_FALLBACK_MESSAGE):
+                session.reply(random.choice(self.messages['waiting_user_input']))
+            else:
+                # After a fallback message, the bot does not reply the "waiting_user_input" message
+                session.set(REPLY_FALLBACK_MESSAGE, False)
 
         self.s0.set_body(s0_body)
         # Plots/Charts
@@ -137,4 +142,4 @@ class DataBot:
         if len(data) == 0:
             session.reply(self.messages['nothing_found'].format(title))
         else:
-            session.reply(self.messages[message_key].format(title))
+            session.reply(random.choice(self.messages[message_key]).format(title))

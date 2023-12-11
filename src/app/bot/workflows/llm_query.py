@@ -1,5 +1,6 @@
 import json
 import logging
+import random
 import traceback
 from typing import TYPE_CHECKING
 
@@ -7,7 +8,7 @@ import openai
 from besser.bot.core.session import Session
 from pandasql import sqldf
 
-from src.app.bot.library.session_keys import LLM_ANSWERS_ENABLED
+from src.app.bot.library.session_keys import LLM_ANSWERS_ENABLED, REPLY_FALLBACK_MESSAGE
 from src.ui.utils.session_state_keys import AI_ICON, OPENAI_MODEL_NAME
 
 if TYPE_CHECKING:
@@ -29,18 +30,19 @@ class LLMQuery:
                     if 'sql' in response:
                         df = self.databot.get_df(session)
                         answer = sqldf(response['sql'])
-                        self.databot.reply_dataframe(session, answer, response['title'], response['sql'])
+                        if answer is not None:
+                            self.databot.reply_dataframe(session, answer, response['title'], response['sql'])
                     session.reply(f'{AI_ICON} ' + response['answer'])
                 except openai.AuthenticationError as e:
-                    session.reply(self.databot.messages['default_fallback_message'])
                     session.reply(self.databot.messages['openai_authentication_error'])
                 except Exception as e:
                     logging.error('An error occurred while calling the OpenAI API. See the attached exception:')
                     traceback.print_exc()
-                    session.reply(self.databot.messages['default_fallback_message'])
+                    session.set(REPLY_FALLBACK_MESSAGE, True)
             else:
-                session.reply(self.databot.messages['default_fallback_message'])
-
+                session.set(REPLY_FALLBACK_MESSAGE, True)
+            if session.get(REPLY_FALLBACK_MESSAGE):
+                session.reply(random.choice(self.databot.messages['default_fallback_message']))
         self.llm_query.set_body(llm_query_body)
         self.llm_query.go_to(self.databot.s0)
 

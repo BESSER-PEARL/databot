@@ -1,16 +1,46 @@
 {
   "greetings": "\uD83D\uDC4B Hi! you are talking with the DataBot of **{0}**",
-  "select_action": "How can I help you?",
-  "default_fallback_message": "Sorry, I didn't get it",
+  "waiting_user_input": [
+    "How can I help you?",
+    "What can I do for you?",
+    "Ask me something about the dataset \uD83D\uDE0A",
+    "How can I assist you?",
+    "Is there anything I can help you with?",
+    "What may I do for you?",
+    "Do you have any questions or requests?",
+    "\uD83E\uDD14 Is there something specific you need?",
+    "What assistance do you require?",
+    "Feel free to ask me anything about the dataset \uD83E\uDD17",
+    "Ask me any questions you have about the dataset",
+    "I'm here to help with any inquiries about the dataset \uD83E\uDD13"
+  ],
+  "default_fallback_message": [
+    "Sorry, I didn't get your question. Could you try again with other words?",
+    "I was not able to understand your query. Could you try again with other words?",
+    "I'm sorry, I didn't quite catch your question. Could you please rephrase it?",
+    "I couldn't comprehend your query. Could you try expressing it differently?",
+    "Apologies, your question is unclear to me. Could you use different words?",
+    "I didn't understand your inquiry. Can you try rephrasing it with different words?",
+    "I didn't grasp your question. Can you try asking it in a different way?"
+  ],
   "openai_authentication_error": "⚠\uFE0FThere is not a valid OpenAI API key. You can add it in the ⚙\uFE0F Settings section. Or you can disable AI-generated answers in the project settings.",
-  "nothing_found": "The answer I generated, {0}, seems to be empty...",
-  "plot_message": "Sure! Take a look at the {0}",
-  "table_message": "I created a table where you can see the answer: {0}",
+  "nothing_found": "The answer I generated, **{0}**, seems to be empty...",
+  "plot_message": [
+    "Sure! Take a look at the **{0}**",
+    "Of course! You can see the **{0}** in the Plots tab.",
+    "Done! I generated a **{0}**, please take a look at it.",
+    "You can visualize the **{0}** I generated in the Plots tab"
+  ],
+  "table_message": [
+    "I created a table where you can see the answer: **{0}**",
+    "Please, take a look at the table I generated: **{0}**",
+    "I generated an answer in the Data section containing the table: **{0}**"
+  ],
   "field_distinct": "These are the different values of {0}:",
-  "most_frequent_value_in_field": "The most frequent value of {0} is {1}",
-  "least_frequent_value_in_field": "The least frequent value of {0} is {1}",
+  "most_frequent_value_in_field": "The most frequent value of {0} is **{1}**",
+  "least_frequent_value_in_field": "The least frequent value of {0} is **{1}**",
   "frequent_value_in_field": "You can take a look at the frequency of all {0} values",
-  "value_frequency": "There are {0} records with the field {1} equal to {2}. Take a look at them:",
+  "value_frequency": "There are **{0}** records with the field {1} equal to {2}. Take a look at them:",
   "value1_more_than_value2": "There are more {0} than {1}, take a look at this table:",
   "value1_equal_to_value2": "There is the same number of {0} and {1}, take a look at this table:",
 

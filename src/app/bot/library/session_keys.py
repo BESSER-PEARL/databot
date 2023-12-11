@@ -4,6 +4,7 @@ FILTERS = 'filters'
 VALUE_FIELD_MAP = "value_field_map"
 BAD_PARAMS = "bad_params"
 LLM_ANSWERS_ENABLED = 'llm_answers_enabled'
+REPLY_FALLBACK_MESSAGE = 'reply_fallback_message'
 
 # Intent Parameter Keys
 

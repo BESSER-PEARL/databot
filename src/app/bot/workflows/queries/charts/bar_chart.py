@@ -19,7 +19,7 @@ class BarChart(AbstractQueryWorkflow):
         df = self.databot.get_df(session)
         field_x = predicted_intent.get_parameter(session_keys.FIELD_X).value
         field_y = predicted_intent.get_parameter(session_keys.FIELD_Y).value
-        title = f'Bar chart of {field_x} grouped by {field_y}'
+        title = f'Bar chart of {field_y} grouped by {field_x}'
         fig = px.bar(df, x=field_x, y=field_y, title=title)
         self.databot.reply(session, df, title, 'plot_message')
         self.platform.reply_plotly(session, fig)

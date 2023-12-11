@@ -35,8 +35,8 @@ class DataBotIntents:
         self.line_chart.parameter(session_keys.FIELD_Y, 'FIELD_Y', databot.entities.field)
 
         self.bar_chart = databot.bot.add_intent(load_intent('bar_chart'))
-        self.bar_chart.parameter(session_keys.FIELD_X, 'FIELD_X', databot.entities.field)
         self.bar_chart.parameter(session_keys.FIELD_Y, 'FIELD_Y', databot.entities.field)
+        self.bar_chart.parameter(session_keys.FIELD_X, 'FIELD_X', databot.entities.field)
 
         self.pie_chart = databot.bot.add_intent(load_intent('pie_chart'))
         self.pie_chart.parameter(session_keys.FIELD_X, 'FIELD_X', databot.entities.field)  # TODO: Only numeric fields
