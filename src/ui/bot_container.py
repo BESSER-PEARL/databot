@@ -15,9 +15,9 @@ from besser.bot.platforms.payload import Payload, PayloadAction, PayloadEncoder
 
 from src.app.app import get_app
 from src.ui.utils.session_monitoring import get_streamlit_session
-from src.ui.utils.session_state_keys import AUDIO, BOT_DF_DATA, BOT_DF_SQL, BOT_DF_TITLE, DATAFRAME, HISTORY, \
-    LAST_VOICE_MESSAGE, PLOTS, PLOTLY, PLOT_INDEX, PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, STR, TABLES, \
-    TABLE_INDEX, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, WEBSOCKET_THREAD
+from src.ui.utils.session_state_keys import AUDIO, BOT_DF_DATA, BOT_DF_SQL, BOT_DF_TITLE, DASHBOARD_TAB, \
+    DASHBOARD_TAB_SWITCH, DATAFRAME, HISTORY, LAST_VOICE_MESSAGE, PLOTS, PLOTLY, PLOT_INDEX, PROJECTS, QUEUE, \
+    SELECTED_PROJECT, SESSION_ID, STR, TABLES, TABLE_INDEX, USER_INPUT, WEBSOCKET, WEBSOCKET_PORT, WEBSOCKET_THREAD
 from src.ui.utils.tweaker import st_tweaker
 from src.ui.utils.utils import get_page_height
 
@@ -61,6 +61,9 @@ def websocket_connection():
             t = DATAFRAME
             streamlit_session._session_state[PROJECTS][project.name][TABLES].append((title, content, sql))
             streamlit_session._session_state[PROJECTS][project.name][TABLE_INDEX] = len(streamlit_session._session_state[PROJECTS][project.name][TABLES]) - 1
+            if streamlit_session._session_state[DASHBOARD_TAB] != 0:
+                streamlit_session._session_state[DASHBOARD_TAB_SWITCH] = not streamlit_session._session_state[DASHBOARD_TAB_SWITCH]
+            streamlit_session._session_state[DASHBOARD_TAB] = 0
         elif payload.action == PayloadAction.BOT_REPLY_PLOTLY.value:
             content = io.from_json(payload.message)
             title = content.layout.title.text
@@ -68,6 +71,9 @@ def websocket_connection():
             t = PLOTLY
             streamlit_session._session_state[PROJECTS][project.name][PLOTS].append((title, content))
             streamlit_session._session_state[PROJECTS][project.name][PLOT_INDEX] = len(streamlit_session._session_state[PROJECTS][project.name][PLOTS]) - 1
+            if streamlit_session._session_state[DASHBOARD_TAB] != 1:
+                streamlit_session._session_state[DASHBOARD_TAB_SWITCH] = not streamlit_session._session_state[DASHBOARD_TAB_SWITCH]
+            streamlit_session._session_state[DASHBOARD_TAB] = 1
         message = Message(t, content, is_user=False)
         streamlit_session._session_state[PROJECTS][project.name][QUEUE].put(message)
         streamlit_session._handle_rerun_script_request()

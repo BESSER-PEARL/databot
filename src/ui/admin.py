@@ -431,7 +431,7 @@ def project_customization_container():
              'You should review the generated data schema and complete it if you find it '
              f'necessary, either manually or automatically through {AI_ICON}AI',
         icon='💡')
-    data_schema_button_cols = st.columns([0.2, 0.2, 0.8])
+    data_schema_button_cols = st.columns([0.25, 0.25, 0.7])
     with data_schema_button_cols[0]:
         if st.button(label=f'{AI_ICON} Enhance with AI',
                      help='Using AI, the data schema can be automatically enhanced and the bot will increase its knowledge about the data.',
