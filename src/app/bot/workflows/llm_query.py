@@ -23,7 +23,7 @@ class LLMQuery:
         self.llm_query = self.databot.bot.new_state('llm_query')
 
         def llm_query_body(session: Session):
-            if session.get(LLM_ANSWERS_ENABLED):
+            if self.client and session.get(LLM_ANSWERS_ENABLED):
                 try:
                     data_schema_dict = self.databot.project.data_schema.to_dict_simple()
                     response = self.query_openai(session.message, data_schema_dict)
