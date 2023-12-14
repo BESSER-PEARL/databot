@@ -33,7 +33,8 @@ class Project:
         self.bot_trained = True
 
     def run_bot(self):
-        self.databot.llm_query_workflow.client = OpenAI(api_key=self.app.properties[OPENAI_API_KEY])
+        if self.app.properties[OPENAI_API_KEY]:
+            self.databot.llm_query_workflow.client = OpenAI(api_key=self.app.properties[OPENAI_API_KEY])
         self.databot.bot.run(train=False, sleep=False)
         self.bot_running = True
 
