@@ -7,4 +7,4 @@ streamlit-browser-session-storage==0.0.3
 streamlit-chat==0.1.1
 streamlit-local-storage==0.0.12
 streamlit-screen-stats==0.0.28
-besser-bot-framework @ git+https://github.com/BESSER-PEARL/BESSER-Bot-Framework.git@dev
+besser-bot-framework @ git+https://github.com/BESSER-PEARL/BESSER-Bot-Framework.git@39d798e12cd32cf8bbe7f86159093e0552696717
