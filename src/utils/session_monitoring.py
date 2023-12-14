@@ -6,7 +6,7 @@ from streamlit.runtime import Runtime
 from streamlit.runtime.app_session import AppSession
 from streamlit.runtime.scriptrunner import add_script_run_ctx, get_script_run_ctx
 
-from src.ui.utils.session_state_keys import PROJECTS, WEBSOCKET
+from src.utils.session_state_keys import PROJECTS, WEBSOCKET
 
 SESSION_MONITORING_INTERVAL = 3
 

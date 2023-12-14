@@ -1,7 +1,7 @@
 import streamlit as st
 
 from src.app.app import get_app
-from src.ui.utils.session_state_keys import NLP_STT_HF_MODEL, OPENAI_API_KEY, OPENAI_MODEL_NAME
+from src.utils.session_state_keys import NLP_STT_HF_MODEL, OPENAI_API_KEY, OPENAI_MODEL_NAME
 
 
 def settings():

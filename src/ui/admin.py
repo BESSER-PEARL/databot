@@ -14,12 +14,12 @@ from src.app.app import get_app
 from src.app.project import Project
 from src.schema.data_schema import DataSchema
 from src.schema.field_type import BOOLEAN, DATETIME, NUMERIC, TEXTUAL
-from src.ui.utils.data_schema_enhancement import data_schema_enhancement
-from src.ui.utils.session_state_keys import AI_ICON, CKAN, COUNT_CSVS, COUNT_DATASETS, EDITED_PACKAGES_DF, IMPORT, \
+from src.utils.data_schema_enhancement import data_schema_enhancement
+from src.utils.session_state_keys import AI_ICON, CKAN, COUNT_CSVS, COUNT_DATASETS, EDITED_PACKAGES_DF, IMPORT, \
     IMPORT_OPEN_DATA_PORTAL, METADATA, OPEN_DATA_SOURCES, SELECTED_PROJECT, SELECT_ALL_CHECKBOXES, TITLE, UDATA, \
     UPLOAD_DATA
 from src.ui.sidebar import admin_menu
-from src.ui.utils.utils import clear_box, get_input_value, project_selection
+from src.utils.utils import clear_box, get_input_value, project_selection
 
 
 def admin():

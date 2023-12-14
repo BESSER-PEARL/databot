@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from besser.bot.nlp.speech2text.speech2text import Speech2Text
 
-from src.ui.utils.session_state_keys import NLP_LANGUAGE, NLP_STT_HF_MODEL
+from src.utils.session_state_keys import NLP_LANGUAGE, NLP_STT_HF_MODEL
 
 if TYPE_CHECKING:
     from src.app.app import App

@@ -5,7 +5,7 @@ from openai import OpenAI
 import streamlit as st
 
 from src.app.project import Project
-from src.ui.utils.session_state_keys import OPENAI_API_KEY, OPENAI_MODEL_NAME
+from src.utils.session_state_keys import OPENAI_API_KEY, OPENAI_MODEL_NAME
 
 
 def data_schema_enhancement(project: Project):

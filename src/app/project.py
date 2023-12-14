@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from src.app.bot.databot import DataBot
 from src.schema.data_schema import DataSchema
-from src.ui.utils.session_state_keys import NLP_LANGUAGE, OPENAI_API_KEY, WEBSOCKET_PORT
+from src.utils.session_state_keys import NLP_LANGUAGE, OPENAI_API_KEY, WEBSOCKET_PORT
 
 if TYPE_CHECKING:
     from src.app.app import App

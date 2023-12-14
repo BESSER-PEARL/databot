@@ -2,7 +2,7 @@ import streamlit as st
 
 from src.app.project import Project
 from src.app.speech2text import Speech2Text
-from src.ui.utils.session_state_keys import APP, NLP_LANGUAGE, NLP_STT_HF_MODEL, OPENAI_API_KEY, OPENAI_MODEL_NAME
+from src.utils.session_state_keys import APP, NLP_LANGUAGE, NLP_STT_HF_MODEL, OPENAI_API_KEY, OPENAI_MODEL_NAME
 
 
 class App:

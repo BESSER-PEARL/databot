@@ -30,7 +30,7 @@ from src.app.bot.workflows.queries.tables.value1_vs_value2 import Value1VSValue2
 from src.app.bot.workflows.queries.tables.value_frequency import ValueFrequency
 from src.schema.field_schema import FieldSchema
 from src.schema.filter import Filter
-from src.ui.utils.session_state_keys import BOT_DF_DATA, BOT_DF_SQL, BOT_DF_TITLE, SESSION_ID
+from src.utils.session_state_keys import BOT_DF_DATA, BOT_DF_SQL, BOT_DF_TITLE, SESSION_ID
 
 if TYPE_CHECKING:
     from src.app.project import Project

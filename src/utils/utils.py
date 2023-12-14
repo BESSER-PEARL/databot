@@ -3,7 +3,7 @@ from st_screen_stats import ScreenData
 from streamlit.components.v1 import html
 
 from src.app.app import get_app
-from src.ui.utils.session_state_keys import SCREEN_DATA, SELECTED_PROJECT
+from src.utils.session_state_keys import SCREEN_DATA, SELECTED_PROJECT
 
 
 def project_selection(page):

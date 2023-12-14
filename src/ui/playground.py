@@ -8,9 +8,9 @@ from src.schema.filter import Filter, boolean_operators, datetime_operators, num
 from src.ui.bot_container import bot_container
 from src.app.app import get_app
 from src.ui.about import about
-from src.ui.utils.session_state_keys import AI_ICON, DASHBOARD_TAB, DASHBOARD_TAB_SWITCH, HISTORY, PLOTS, PLOT_INDEX, \
+from src.utils.session_state_keys import AI_ICON, DASHBOARD_TAB, DASHBOARD_TAB_SWITCH, HISTORY, PLOTS, PLOT_INDEX, \
     PROJECTS, QUEUE, SELECTED_PROJECT, SESSION_ID, TABLES, TABLE_INDEX
-from src.ui.utils.utils import get_page_height, project_selection, toggle_button
+from src.utils.utils import get_page_height, project_selection, toggle_button
 
 BOT_CONTAINER_WIDTH = 0.3
 

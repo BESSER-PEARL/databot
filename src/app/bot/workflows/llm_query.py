@@ -9,7 +9,7 @@ from besser.bot.core.session import Session
 from pandasql import sqldf
 
 from src.app.bot.library.session_keys import LLM_ANSWERS_ENABLED, REPLY_FALLBACK_MESSAGE
-from src.ui.utils.session_state_keys import AI_ICON, OPENAI_MODEL_NAME
+from src.utils.session_state_keys import AI_ICON, OPENAI_MODEL_NAME
 
 if TYPE_CHECKING:
     from src.app.bot.databot import DataBot
