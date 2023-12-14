@@ -198,7 +198,6 @@ def import_ckan_portal(base_url: str, submitted_base_url: bool, import_projects:
                             st.error(f"Failed to fetch data from {package}")
         if first_index != -1:
             st.session_state[SELECTED_PROJECT] = app.projects[first_index]
-        # Wait for all futures to complete
         end_time = time.time()
         elapsed_time_seconds = end_time - start_time
         elapsed_hours = int(elapsed_time_seconds // 3600)
