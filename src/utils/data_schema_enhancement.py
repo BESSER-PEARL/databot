@@ -26,7 +26,7 @@ def data_schema_enhancement(project: Project):
                         
                         Your task is to add more knowledge into this data schema, but only if you find it necessary.
                         You can modify the readable_name of a column if you can think of something better when it is difficult to get the meaning of the column name.
-                        The column type cannot be modified.
+                        The column type and original name (i.e. the JSON keys) cannot be modified.
                         Add new synonyms both for the column names and for each column category, but again, only if you consider them relevant to better understand the data schema. The more synonyms, the better (usually between 0 and 6 is OK). Slight variations of the same value are also allowed.
                         If the column names or categories are not in English, you can add translations as if they were synonyms. Only add synonyms in English.
                         Remember to modify only those elements where you consider it necessary. You can leave some attributes as they are provided if no further knowledge is necessary.
@@ -52,19 +52,24 @@ def data_schema_enhancement(project: Project):
                 field_updated = False
                 if field_name in [field.original_name for field in project.data_schema.field_schemas]:
                     field_schema = project.data_schema.get_field(field_name)
-                    if 'readable_name' in field_data and field_schema.readable_name != field_data['readable_name']:
+                    if 'readable_name' in field_data and field_schema.readable_name == field_schema.original_name:
+                        if field_schema.readable_name != field_data['readable_name']:
+                            field_updated = True
                         field_schema.readable_name = field_data['readable_name']
-                        field_updated = True
-                    if 'synonyms' in field_data and set(field_schema.synonyms['en']) != set(field_data['synonyms']):
-                        field_schema.synonyms['en'] = field_data['synonyms']
-                        field_updated = True
+                    if 'synonyms' in field_data:
+                        new_synonyms = set(field_schema.synonyms['en'] + field_data['synonyms'])
+                        if set(new_synonyms) != set(field_schema.synonyms['en']):
+                            field_updated = True
+                        field_schema.synonyms['en'] = list(new_synonyms)
                     if 'categories' in field_data:
                         for category_name, category_data in field_data['categories'].items():
                             if category_name in [category.value for category in field_schema.categories]:
                                 category = field_schema.get_category(category_name)
-                                if 'synonyms' in category_data and set(category.synonyms['en']) != set(category_data['synonyms']):
-                                    category.synonyms['en'] = category_data['synonyms']
-                                    field_updated = True
+                                if 'synonyms' in category_data:
+                                    new_synonyms = set(category.synonyms['en'] + category_data['synonyms'])
+                                    if set(new_synonyms) != set(category.synonyms['en']):
+                                        field_updated = True
+                                    category.synonyms['en'] = list(new_synonyms)
                             else:
                                 st.error(f'The generated data schema has a non-existent category in {field_name}: {category_name}')
                 else:
