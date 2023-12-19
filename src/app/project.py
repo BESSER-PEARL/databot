@@ -24,7 +24,7 @@ class Project:
             NLP_LANGUAGE: 'en',
             WEBSOCKET_PORT: 8765 + len(self.app.projects)
         }
-        self.ai_updated_projects = []
+        self.ai_updated_fields = []
         self.app.add_project(self)
 
     def train_bot(self):

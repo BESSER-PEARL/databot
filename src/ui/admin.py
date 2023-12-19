@@ -423,13 +423,13 @@ def project_customization_container():
                      use_container_width=True):
             with st.spinner('Generating...'):
                 ai_updated_fields = data_schema_enhancement(project)
-            project.ai_updated_projects = ai_updated_fields
+            project.ai_updated_fields = ai_updated_fields
     with data_schema_button_cols[1]:
         if st.button(label='🔄 Reset Data Schema',
                      help='Reset the data schema to the originally inferred.',
                      use_container_width=True):
             project.data_schema = DataSchema(project)
-            project.ai_updated_projects = []
+            project.ai_updated_fields = []
 
     icons_map = {
         NUMERIC: '123',
@@ -439,7 +439,7 @@ def project_customization_container():
     }
 
     def add_ai_icon(name):
-        if name in project.ai_updated_projects:
+        if name in project.ai_updated_fields:
             return f'{name}{AI_ICON}'
         return name
 
