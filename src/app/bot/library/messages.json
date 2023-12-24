@@ -36,7 +36,7 @@
     "Please, take a look at the table I generated: **{0}**",
     "I generated an answer in the Data section containing the table: **{0}**"
   ],
-  "field_distinct": "These are the different values of {0}:",
+  "field_distinct": "There are **{0}** unique values of {1}. Take a look at the generated table to see them all.",
   "most_frequent_value_in_field": "The most frequent value of {0} is **{1}**",
   "least_frequent_value_in_field": "The least frequent value of {0} is **{1}**",
   "frequent_value_in_field": "You can take a look at the frequency of all {0} values",

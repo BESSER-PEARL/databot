@@ -18,5 +18,5 @@ class FieldDistinct(AbstractQueryWorkflow):
         df = self.databot.get_df(session)
         field = predicted_intent.get_parameter(session_keys.FIELD).value
         answer = pd.DataFrame(df[field].unique(), columns=[field])
-        self.platform.reply(session, self.databot.messages['field_distinct'].format(field))
+        self.platform.reply(session, self.databot.messages['field_distinct'].format(len(answer), field))
         self.databot.reply_dataframe(session, answer, f"Unique values of field '{field}'")

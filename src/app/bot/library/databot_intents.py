@@ -55,6 +55,9 @@ class DataBotIntents:
 
         # Tables
 
+        self.field_distinct = databot.bot.add_intent(load_intent('field_distinct'))
+        self.field_distinct.parameter(session_keys.FIELD, 'FIELD', databot.entities.field)
+
         self.most_frequent_value_in_field = databot.bot.add_intent(load_intent('most_frequent_value_in_field'))
         self.most_frequent_value_in_field.parameter(session_keys.FIELD, 'FIELD', databot.entities.field)
         self.most_frequent_value_in_field.parameter(session_keys.ROW_NAME, 'ROW_NAME', databot.entities.row_name)

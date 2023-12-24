@@ -155,7 +155,17 @@
     "Create a visual representation of the distribution in FIELD using a boxplot",
     "Plot a boxplot chart to visualize the spread and central tendency of FIELD"
   ],
-
+  "field_distinct": [
+    "How many FIELD are?",
+    "How many FIELD are there?",
+    "How many FIELD do we have?",
+    "What FIELD are there?",
+    "Which are the different FIELD?",
+    "Tell me the different FIELD available",
+    "Show me all the different FIELD in the data",
+    "Give me the different FIELD",
+    "What kind of FIELD are there?"
+  ],
   "most_frequent_value_in_field": [
     "What FIELD has more ROW_NAME?",
     "Which is the FIELD that has more ROW_NAME?",

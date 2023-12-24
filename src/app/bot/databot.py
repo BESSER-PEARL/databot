@@ -98,6 +98,7 @@ class DataBot:
         self.s0.when_intent_matched_go_to(self.intents.area_chart, self.area_chart_workflow.main_state)
         self.s0.when_intent_matched_go_to(self.intents.boxplot_chart, self.boxplot_chart_workflow.main_state)
         # Tables
+        self.s0.when_intent_matched_go_to(self.intents.field_distinct, self.field_distinct.main_state)
         self.s0.when_intent_matched_go_to(self.intents.most_frequent_value_in_field, self.frequent_value_in_field.main_state)
         self.s0.when_intent_matched_go_to(self.intents.least_frequent_value_in_field, self.frequent_value_in_field.main_state)
         self.s0.when_intent_matched_go_to(self.intents.value_frequency, self.value_frequency.main_state)
