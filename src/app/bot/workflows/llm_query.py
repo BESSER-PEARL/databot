@@ -60,7 +60,7 @@ class LLMQuery:
                     Remember to use column names and values that are present in the data.
                     Do not invent the query parameters. You can guess 
                     some of the query parameters based on the user input (e.g., if there is a 'city' column and the
-                    user asks something about 'regions', then you know you should query the 'city' column. Also take a 
+                    user asks something about 'regions', then you know you should query the 'city' column.
                     Consider the following data schema/metadata of the chatbot's csv file if you need it in order to 
                     provide the best answer. Remember there you may find column name synonyms, categories (for 
                     those that are categorical) or type.
