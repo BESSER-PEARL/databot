@@ -52,7 +52,7 @@ def upload_data():
     with st.form(UPLOAD_DATA, clear_on_submit=True):
         project_name = st.text_input(label='Project name', placeholder='Example: sales_project')
         uploaded_file = st.file_uploader(label="Choose a file", type='csv')
-        # if uploaded_file is not None:
+        delimiter = st.text_input(label='Delimiter', value=',')
         submitted = st.form_submit_button(label="Create project", type='primary')
         if submitted:
             if uploaded_file is None:
@@ -63,7 +63,7 @@ def upload_data():
                 if project_name in [project.name for project in app.projects]:
                     st.error(f"The project name '{project_name}' already exists. Please choose another one")
                 else:
-                    project = Project(app, project_name, pd.read_csv(uploaded_file))
+                    project = Project(app, project_name, pd.read_csv(uploaded_file, delimiter=delimiter))
                     st.session_state[SELECTED_PROJECT] = project
                     st.info(f'The project **{project.name}** has been created! Go to **Manage project** to train a 🤖 bot upon it.')
                     if len(app.projects) == 1:

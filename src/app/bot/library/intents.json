@@ -90,7 +90,7 @@
   "scatter_chart": [
     "Scatter chart of FIELD_X over FIELD_Y",
     "Scatter plot of FIELD_X against FIELD_Y",
-    "Generate a SCATTER CHART to visualize the relationship between FIELD_X and FIELD_Y",
+    "Generate a scatter chart to visualize the relationship between FIELD_X and FIELD_Y",
     "I'd like to see a scatter chart plotting FIELD_X against FIELD_Y",
     "Create a scatter plot illustrating the correlation between FIELD_X and FIELD_Y",
     "Show me a scatter chart that displays the distribution of FIELD_X and FIELD_Y values",
