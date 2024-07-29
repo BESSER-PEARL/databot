@@ -36,6 +36,8 @@ def admin():
     if admin_page == 'New project' or not project:
         upload_data()
         st.divider()
+        load_file_url()
+        st.divider()
         import_open_data_portal()
     elif admin_page == 'All projects':
         # TODO: Cannot click on all projects when in new project
@@ -69,6 +71,36 @@ def upload_data():
                     if len(app.projects) == 1:
                         # If first project, rerun
                         st.rerun()
+
+
+def load_file_url():
+    """Show the Load file URL container."""
+    app = get_app()
+
+    st.header('Load file URL')
+    with st.form(UPLOAD_DATA + '2', clear_on_submit=True):
+        project_name = st.text_input(label='Project name', placeholder='Example: sales_project')
+        file_url = st.text_input(label='File URL')
+        delimiter = st.text_input(label='Delimiter', value=',')
+        submitted = st.form_submit_button(label="Create project", type='primary')
+        if submitted:
+            if file_url is None:
+                st.error('Please introduce a CSV URL')
+            else:
+                if project_name is None or project_name == '':
+                    project_name = 'project_' + str(len(app.projects) + 1)
+                if project_name in [project.name for project in app.projects]:
+                    st.error(f"The project name '{project_name}' already exists. Please choose another one")
+                else:
+                    project = Project(app, project_name, pd.read_csv(file_url, delimiter=delimiter))
+                    st.session_state[SELECTED_PROJECT] = project
+                    st.info(
+                        f'The project **{project.name}** has been created! Go to **Manage project** to train a 🤖 bot upon it.')
+                    if len(app.projects) == 1:
+                        # If first project, rerun
+                        st.rerun()
+
+
 
 
 def import_open_data_portal():
