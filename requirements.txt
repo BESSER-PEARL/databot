@@ -1,5 +1,5 @@
 chardet==5.2.0
-openai==1.3.8
+openai==1.8.0
 pandasql==0.7.3
 streamlit==1.27.2
 streamlit-antd-components==0.2.4
@@ -7,4 +7,4 @@ streamlit-browser-session-storage==0.0.3
 streamlit-chat==0.1.1
 streamlit-local-storage==0.0.12
 streamlit-screen-stats==0.0.28
-besser-bot-framework @ git+https://github.com/BESSER-PEARL/BESSER-Bot-Framework.git@39d798e12cd32cf8bbe7f86159093e0552696717
+besser-bot-framework @ git+https://github.com/BESSER-PEARL/BESSER-Bot-Framework.git@dev
