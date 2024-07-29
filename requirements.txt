@@ -1,5 +1,5 @@
 chardet==5.2.0
-openai==1.8.0
+openai==1.24.0
 pandasql==0.7.3
 streamlit==1.27.2
 streamlit-antd-components==0.2.4
