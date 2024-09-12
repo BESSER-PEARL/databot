@@ -1,10 +1,12 @@
 import json
 import threading
+from datetime import datetime
+
 import pandas as pd
 import streamlit as st
 import websocket
 from audio_recorder_streamlit import audio_recorder
-from besser.bot.platforms.websocket.message import Message
+from besser.bot.core.message import Message
 from plotly import io
 
 from streamlit.components.v1 import html
@@ -74,7 +76,7 @@ def websocket_connection():
             if streamlit_session._session_state[DASHBOARD_TAB] != 1:
                 streamlit_session._session_state[DASHBOARD_TAB_SWITCH] = not streamlit_session._session_state[DASHBOARD_TAB_SWITCH]
             streamlit_session._session_state[DASHBOARD_TAB] = 1
-        message = Message(t, content, is_user=False)
+        message = Message(t, content, is_user=False, timestamp=datetime.now())
         streamlit_session._session_state[PROJECTS][project.name][QUEUE].put(message)
         streamlit_session._handle_rerun_script_request()
 
@@ -113,7 +115,7 @@ def bot_container():
     def on_input_change():
         user_input = st.session_state[USER_INPUT]
         st.session_state[USER_INPUT] = ''
-        message = Message(STR, user_input, is_user=True)
+        message = Message(STR, user_input, is_user=True, timestamp=datetime.now())
         st.session_state[PROJECTS][project.name][HISTORY].append(message)
         if user_input.endswith('?'):
             user_input = user_input[:-1] + ' ?'
@@ -168,7 +170,7 @@ def bot_container():
                     and project and project.bot_running:
                 st.session_state[LAST_VOICE_MESSAGE] = voice_bytes
                 # Encode the audio bytes to a base64 string
-                voice_message = Message(t=AUDIO, content=voice_bytes, is_user=True)
+                voice_message = Message(t=AUDIO, content=voice_bytes, is_user=True, timestamp=datetime.now())
                 st.session_state[PROJECTS][project.name][HISTORY].append(voice_message)
                 transcription = app.speech2text.speech2text(voice_bytes)
                 if transcription.endswith('?'):

@@ -133,7 +133,7 @@ class DataBot:
                 df[col] = df[col].astype(str)
         message = {BOT_DF_TITLE: title, BOT_DF_SQL: sql, BOT_DF_DATA: df.to_dict()}
         message = json.dumps(message)
-        session.chat_history.append((message, 0))
+        # session.chat_history.append((message, 0))
         payload = Payload(action=PayloadAction.BOT_REPLY_DF,
                           message=message)
         self.platform._send(session.id, payload)
