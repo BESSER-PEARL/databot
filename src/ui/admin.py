@@ -477,7 +477,7 @@ def project_customization_container():
 
     selected_field = sac.tabs(
         [sac.TabsItem(label=field.original_name, icon=icons_map[field.type.t]) for field in project.data_schema.field_schemas],
-        align='start', return_index=False, grow=True, format_func=add_ai_icon)
+        align='start', return_index=False, use_container_width=True, format_func=add_ai_icon)
     col1, col2 = st.columns([0.4, 0.4])
     field = project.data_schema.get_field(selected_field)
     with col1:
