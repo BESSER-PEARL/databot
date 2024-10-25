@@ -55,7 +55,7 @@ def playground():
                 sac.TabsItem(label='Plots', icon='bar-chart-fill'),
                 sac.TabsItem(label='Filters', icon='funnel-fill'),
                 sac.TabsItem(label='Settings', icon='gear-fill'),
-            ], align='center', return_index=True, grow=True,
+            ], align='left', use_container_width=True, return_index=True,
                 key=f'dashboard_tabs_key_{st.session_state[DASHBOARD_TAB_SWITCH]}', index=st.session_state[DASHBOARD_TAB])
             st.session_state[DASHBOARD_TAB] = selected_tab
             if selected_tab == 0:  # Data
@@ -163,8 +163,8 @@ def playground():
                             st.text_input('Select a value', disabled=True, placeholder='No operator selected')
 
                     session_id = st.session_state[PROJECTS][project.name][SESSION_ID]
-                    if session_id and project.databot.bot.get_session(session_id):
-                        bot_filters: list = project.databot.bot.get_session(session_id).get(FILTERS)
+                    if session_id and project.databot.bot._get_session(session_id):
+                        bot_filters: list = project.databot.bot._get_session(session_id).get(FILTERS)
                         if st.button(
                                 label='Apply filter',
                                 disabled=not (target_field_schema and filter_operator and filter_value_ok),
@@ -225,7 +225,7 @@ def navigate_dashboard_elements(elements_label, index_label):
         sac.ButtonsItem(icon='caret-right-fill'),
         sac.ButtonsItem(icon='chevron-bar-right'),
         sac.ButtonsItem(label='Delete this element', disabled=(elements_label==TABLES and st.session_state[PROJECTS][project.name][index_label]==0)),
-    ], align='center', shape='circle', index=None, type='text', return_index=True)
+    ], align='center', index=None, variant='text', return_index=True)
 
     if selected_button == 0:  # Move to the top left
         st.session_state[PROJECTS][project.name][index_label] = 0
