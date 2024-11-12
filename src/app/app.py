@@ -10,7 +10,7 @@ class App:
     def __init__(self):
         self.properties: dict = {
             OPENAI_API_KEY: None,
-            OPENAI_MODEL_NAME: 'gpt-4-1106-preview',
+            OPENAI_MODEL_NAME: 'gpt-4o-mini',
             NLP_LANGUAGE: 'en',  # used for the speech2text component, there is 1 for all the projects
             NLP_STT_HF_MODEL: 'openai/whisper-tiny',
         }

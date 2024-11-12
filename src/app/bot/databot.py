@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING
 import pandas as pd
 from besser.bot.core.bot import Bot
 from besser.bot.core.session import Session
-from besser.bot.nlp import NLP_LANGUAGE
+from besser.bot.nlp import NLP_LANGUAGE, OPENAI_API_KEY
+from besser.bot.nlp.intent_classifier.intent_classifier_configuration import LLMIntentClassifierConfiguration
+from besser.bot.nlp.llm.llm_openai_api import LLMOpenAI
 from besser.bot.platforms.payload import Payload, PayloadAction
 from besser.bot.platforms.websocket import WEBSOCKET_PORT
 from besser.bot.platforms.websocket.websocket_platform import WebSocketPlatform
@@ -30,6 +32,7 @@ from src.app.bot.workflows.queries.tables.value1_vs_value2 import Value1VSValue2
 from src.app.bot.workflows.queries.tables.value_frequency import ValueFrequency
 from src.schema.field_schema import FieldSchema
 from src.schema.filter import Filter
+from src.utils import session_state_keys
 from src.utils.session_state_keys import BOT_DF_DATA, BOT_DF_SQL, BOT_DF_TITLE, SESSION_ID
 
 if TYPE_CHECKING:
@@ -50,6 +53,23 @@ class DataBot:
         logging.basicConfig(level=logging.INFO, format='{levelname} - {asctime}: {message}', style='{')
         self._set_bot_properties()
         self.platform: WebSocketPlatform = self.bot.use_websocket_platform(use_ui=False)
+
+        llm = LLMOpenAI(bot=self.bot, name='gpt-4o-mini', parameters={})
+
+        ic_config = LLMIntentClassifierConfiguration(
+            llm_name='gpt-4o-mini',
+            parameters={
+                "seed": None,
+                "top_p": 1,
+                "temperature": 1,
+            },
+            use_intent_descriptions=True,
+            use_training_sentences=True,
+            use_entity_descriptions=False,
+            use_entity_synonyms=True
+        )
+
+        self.bot.set_default_ic_config(ic_config)
 
         self.initial = self.bot.new_state('initial', initial=True)
         self.s0 = self.bot.new_state('s0')
@@ -108,6 +128,7 @@ class DataBot:
         self.s0.when_no_intent_matched_go_to(self.llm_query_workflow.llm_query)
 
     def _set_bot_properties(self):
+        self.bot.set_property(OPENAI_API_KEY, self.project.app.properties[session_state_keys.OPENAI_API_KEY])
         self.bot.set_property(WEBSOCKET_PORT, self.project.properties[WEBSOCKET_PORT.name])
         self.bot.set_property(NLP_LANGUAGE, self.project.properties[NLP_LANGUAGE.name])
 
