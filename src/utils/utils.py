@@ -102,14 +102,13 @@ def remove_top_margin(page: str):
         'Settings': -120,
         'About DataBot': -120
     }
-    st.markdown(
+    st.html(
         f"""
             <style>
-                .appview-container .main .block-container {{
+                .stAppViewContainer .stMain .stMainBlockContainer {{
                     margin-top: {page_margins[page]}px;
                 }}
-            </style>""",
-        unsafe_allow_html=True
+            </style>"""
     )
 
 

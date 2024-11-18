@@ -1,7 +1,7 @@
 chardet==5.2.0
 openai==1.24.0
 pandasql==0.7.3
-streamlit==1.27.2
+streamlit==1.40.0
 streamlit-antd-components==0.3.2
 streamlit-browser-session-storage==0.0.3
 streamlit-chat==0.1.1
